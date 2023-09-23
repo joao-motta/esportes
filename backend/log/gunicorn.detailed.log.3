@@ -1,0 +1,102 @@
+[2023-09-19 22:04:39,399] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:04:39] "POST /documento HTTP/1.1" 200 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:04:41,940] ERROR log_exception() L1449 Exception on /documentos [GET] - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py L1449
+Traceback (most recent call last):
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1519, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1517, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1503, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/scaffold.py", line 109, in wrapper
+    resp = _do_wrapper(
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/do_wrapper.py", line 135, in _do_wrapper
+    response = func(**request_kwargs)
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/app.py", line 79, in get_documentos
+    return apresenta_documento(documento), 200
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/schemas/documento.py", line 74, in apresenta_documento
+    "tipo_documento": documento.tipo_documento,
+AttributeError: module 'schemas.documento' has no attribute 'tipo_documento'
+[2023-09-19 22:04:41,970] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:04:41] "[35m[1mGET /documentos HTTP/1.1[0m" 500 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:09:46,497] INFO _log() L224  [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.15.171:5000 - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:09:46,498] INFO _log() L224  [33mPress CTRL+C to quit[0m - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:09:54,040] ERROR log_exception() L1449 Exception on /documentos [GET] - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py L1449
+Traceback (most recent call last):
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1519, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1517, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1503, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/scaffold.py", line 109, in wrapper
+    resp = _do_wrapper(
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/do_wrapper.py", line 135, in _do_wrapper
+    response = func(**request_kwargs)
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/app.py", line 79, in get_documentos
+    return apresenta_documento(documentos), 200
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/schemas/documento.py", line 73, in apresenta_documento
+    "id": documento.id,
+AttributeError: 'list' object has no attribute 'id'
+[2023-09-19 22:09:54,062] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:09:54] "[35m[1mGET /documentos HTTP/1.1[0m" 500 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:10:03,581] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:10:03] "POST /documento HTTP/1.1" 200 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:10:07,203] ERROR log_exception() L1449 Exception on /documentos [GET] - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py L1449
+Traceback (most recent call last):
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1519, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1517, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1503, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/scaffold.py", line 109, in wrapper
+    resp = _do_wrapper(
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/do_wrapper.py", line 135, in _do_wrapper
+    response = func(**request_kwargs)
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/app.py", line 79, in get_documentos
+    return apresenta_documento(documentos), 200
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/schemas/documento.py", line 73, in apresenta_documento
+    "id": documento.id,
+AttributeError: 'list' object has no attribute 'id'
+[2023-09-19 22:10:07,205] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:10:07] "[35m[1mGET /documentos HTTP/1.1[0m" 500 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:13:15,895] INFO _log() L224  [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.15.171:5000 - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:13:15,896] INFO _log() L224  [33mPress CTRL+C to quit[0m - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:13:18,616] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:13:18] "[33mGET /produtos HTTP/1.1[0m" 404 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:13:29,370] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:13:29] "GET /documentos HTTP/1.1" 200 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:13:40,824] INFO _log() L224  127.0.0.1 - - [19/Sep/2023 22:13:40] "POST /documento HTTP/1.1" 200 - - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/werkzeug/_internal.py L224 
+[2023-09-19 22:14:07,141] ERROR log_exception() L1449 Exception on /documentos [GET] - call_trace=/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py L1449
+Traceback (most recent call last):
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1519, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1517, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1503, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/scaffold.py", line 109, in wrapper
+    resp = _do_wrapper(
+  File "/Users/macbook/Library/Python/3.9/lib/python/site-packages/flask_openapi3/do_wrapper.py", line 135, in _do_wrapper
+    response = func(**request_kwargs)
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/app.py", line 79, in get_documentos
+    return apresenta_documento(documentos), 200
+  File "/Users/macbook/Documents/Fullstack/TCC/fullstackbasico/backend/schemas/documento.py", line 73, in apresenta_documento
+    "id": documento.id,
+AttributeError: 'list' object has no attribute 'id'
