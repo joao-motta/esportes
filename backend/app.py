@@ -1,5 +1,5 @@
 from flask_openapi3 import OpenAPI, Info, Tag
-from flask import redirect
+from flask import Flask, request, send_from_directory
 from urllib.parse import unquote
 
 from sqlalchemy.exc import IntegrityError
@@ -8,6 +8,10 @@ from model import Session, Documento
 from logger import logger
 from schemas import *
 from flask_cors import CORS
+
+import os
+
+app = Flask(__name__)
 
 info = Info(title="Minha API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
@@ -133,3 +137,33 @@ def del_documento(query: DocumentoBuscaSchema):
         error_msg = "Documento não encontrado na base :/"
         logger.warning(f"Erro ao deletar documento #'{nr_documento}', {error_msg}")
         return {"mesage": error_msg}, 404
+
+# Pasta onde os vídeos serão armazenados
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['ALLOWED_EXTENSIONS'] = {'mp4', 'avi', 'mov', 'mkv'}  # Ajuste conforme necessário
+
+# Função para verificar se o arquivo é permitido
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return "No file part", 400
+    file = request.files['file']
+    if file.filename == '':
+        return "No selected file", 400
+    if file and allowed_file(file.filename):
+        filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(filename)
+        return "File uploaded successfully!", 200
+    return "Invalid file format", 400
+
+# Rota para servir vídeos
+@app.route('/videos/<filename>')
+def serve_video(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+if __name__ == "__main__":
+    app.run(debug=True)
