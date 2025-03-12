@@ -1,8 +1,4 @@
-# MVP - SCF
-
-Sistema de Controle Financeiro para Medias e Grandes Empresas.
-
-Visibilidade para clientes e fornecedores sobre seus documentos financeiros.
+# Site Videos Esporte
 
 ---
 ## Como executar 
