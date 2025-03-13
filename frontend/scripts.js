@@ -4,7 +4,7 @@
   --------------------------------------------------------------------------------------
 */
 const getList = async () => {
-  let url = 'http://127.0.0.1:5000/documentos';
+  let url = 'https://esportes-x2p0.onrender.com/documentos';
   fetch(url, {
     method: 'get',
   })
@@ -40,7 +40,7 @@ const postItem = async (inputDocumentType, inputDocumentNumber, inputCompanyName
   formData.append('status', inputStatus);
   
 
-  let url = 'http://127.0.0.1:5000/documento';
+  let url = 'https://esportes-x2p0.onrender.com/documento';
   fetch(url, {
     method: 'post',
     body: formData
@@ -97,7 +97,7 @@ const removeElement = () => {
 */
 const deleteItem = (item) => {
   console.log(item)
-  let url = `http://127.0.0.1:5000/documento?nr_documento=${item.nr_documento}&razao_social=${item.razao_social}`;
+  let url = `https://esportes-x2p0.onrender.com/documento?nr_documento=${item.nr_documento}&razao_social=${item.razao_social}`;
   fetch(url, {
     method: 'delete'
 })
