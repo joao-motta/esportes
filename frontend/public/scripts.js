@@ -45,7 +45,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Exibir o nome da sala na página
     const salaNome = document.getElementById("salaNome");
     if (salaId && salaNome) {
-        salaNome.textContent = `Sala: ${salaId}`;
+        // Buscar nome da sala através do ID
+        fetch("https://esportes-x2p0.onrender.com/api/salas")
+            .then(response => response.json())
+            .then(salas => {
+                const sala = salas.find(s => s.id == salaId);
+                if (sala) {
+                    salaNome.textContent = `Sala: ${sala.nome}`; // Exibe o nome da sala
+                } else {
+                    salaNome.textContent = 'Sala não encontrada';
+                }
+            })
+            .catch(error => console.error("Erro ao buscar nome da sala:", error));
     }
 
     // Carregar dias
