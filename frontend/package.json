@@ -1,14 +1,4 @@
-{
-  "name": "esportes-app",
-  "version": "1.0.0",
-  "description": "Plataforma de vídeos de esportes",
-  "main": "index.html",
-  "scripts": {
-    "start": "serve .",
-    "build": "echo 'nothing to build'"
-  },
-  "dependencies": {
-    "serve": "^14.0.0"
-  },
-  "devDependencies": {}
+"scripts": {
+  "start": "serve .",
+  "build": "echo 'Building assets (optional, nothing to build)'"
 }
