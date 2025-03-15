@@ -1,3 +1,7 @@
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';  // Arquivo gerado pelo Amplify CLI
+Amplify.configure(awsconfig);
+
 document.addEventListener("DOMContentLoaded", function () {
     const salaSelect = document.getElementById("sala");
     const irParaSelecaoButton = document.getElementById("irParaSelecao");
