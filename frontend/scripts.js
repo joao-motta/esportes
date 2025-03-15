@@ -16,12 +16,10 @@ function carregarSalas() {
         });
 }
 
-function selecionarSala(salaId) {
-    document.getElementById("selecao-dia").classList.remove("hidden");
-    carregarDias(salaId);
-}
+function carregarDias() {
+    let salaId = document.getElementById("salas").value;
+    if (!salaId) return;
 
-function carregarDias(salaId) {
     fetch(`/api/dias/${salaId}`)
         .then(response => response.json())
         .then(data => {
@@ -33,12 +31,15 @@ function carregarDias(salaId) {
                 option.textContent = dia;
                 select.appendChild(option);
             });
+
+            document.getElementById("selecao-dia").classList.remove("hidden");
         });
 }
 
 function carregarHorarios() {
     let salaId = document.getElementById("salas").value;
     let dia = document.getElementById("dias").value;
+    if (!salaId || !dia) return;
 
     fetch(`/api/horarios/${salaId}/${dia}`)
         .then(response => response.json())
@@ -60,22 +61,21 @@ function carregarVideos() {
     let salaId = document.getElementById("salas").value;
     let dia = document.getElementById("dias").value;
     let horario = document.getElementById("horarios").value;
+    if (!salaId || !dia || !horario) return;
 
     fetch(`/api/videos/${salaId}/${dia}/${horario}`)
         .then(response => response.json())
         .then(data => {
             let lista = document.getElementById("lista-videos");
             lista.innerHTML = "";
-            
             data.forEach(video => {
-                let div = document.createElement("div");
-                div.classList.add("video-item");
-                div.innerHTML = `
-                    <img src="${video.thumbnail}" alt="Thumb do ${video.nome}">
-                    <p>${video.nome}</p>
-                    <a href="${video.url}" download>📥 Baixar</a>
-                `;
-                lista.appendChild(div);
+                let li = document.createElement("li");
+                let link = document.createElement("a");
+                link.href = video.url;
+                link.textContent = video.nome;
+                link.setAttribute("download", video.nome);
+                li.appendChild(link);
+                lista.appendChild(li);
             });
 
             document.getElementById("videos").classList.remove("hidden");
