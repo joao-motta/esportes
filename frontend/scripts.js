@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Função para carregar as salas
     async function carregarSalas() {
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/salas");
+            const response = await fetch("https://esportes-x2p0.onrender.com/api/salas");
             const salas = await response.json();
 
             salas.forEach(sala => {
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!this.value) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/dias/${this.value}`);
+            const response = await fetch(`https://esportes-x2p0.onrender.com/api/dias/${this.value}`);
             const dias = await response.json();
 
             if (dias.length > 0) {
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!this.value) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/horarios/${salaSelect.value}/${this.value}`);
+            const response = await fetch(`https://esportes-x2p0.onrender.com/api/horarios/${salaSelect.value}/${this.value}`);
             const horarios = await response.json();
 
             if (horarios.length > 0) {
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!this.value) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/videos/${salaSelect.value}/${diaSelect.value}/${this.value}`);
+            const response = await fetch(`https://esportes-x2p0.onrender.com/api/videos/${salaSelect.value}/${diaSelect.value}/${this.value}`);
             const videos = await response.json();
 
             if (videos.length > 0) {
