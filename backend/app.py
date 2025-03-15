@@ -6,11 +6,38 @@ import boto3
 app = Flask(__name__)
 CORS(app)
 
-# Dados simulados
-SALAS = {1: "Quadra Futebol", 2: "Ginásio Basquete"}
-DIAS = {1: ["2025-03-15", "2025-03-16"], 2: ["2025-03-15"]}
-HORARIOS = {(1, "2025-03-15"): ["10:00", "14:00"], (2, "2025-03-15"): ["15:00"]}
-VIDEOS = {(1, "2025-03-15", "10:00"): [{"nome": "Treino.mp4", "url": "https://exemplo.com/video.mp4"}]}
+# ✅ Estrutura de dados simulados corrigida
+SALAS = [
+    {"id": 1, "nome": "Quadra Futebol", "imagem": "https://via.placeholder.com/150"},
+    {"id": 2, "nome": "Ginásio Basquete", "imagem": "https://via.placeholder.com/150"}
+]
+
+DIAS = {
+    1: ["2025-03-15", "2025-03-16"],
+    2: ["2025-03-15"]
+}
+
+HORARIOS = {
+    (1, "2025-03-15"): ["10:00", "14:00"],
+    (2, "2025-03-15"): ["15:00"]
+}
+
+VIDEOS = {
+    (1, "2025-03-15", "10:00"): [
+        {
+            "nome": "Treino Futebol",
+            "thumbnail": "https://via.placeholder.com/150",
+            "url": "https://exemplo.com/video1.mp4"
+        }
+    ],
+    (2, "2025-03-15", "15:00"): [
+        {
+            "nome": "Treino Basquete",
+            "thumbnail": "https://via.placeholder.com/150",
+            "url": "https://exemplo.com/video2.mp4"
+        }
+    ]
+}
 
 # Configuração da AWS S3
 S3_BUCKET = "video-esporte"
@@ -25,7 +52,7 @@ s3_client = boto3.client(
     aws_secret_access_key=AWS_SECRET_KEY,
 )
 
-# Rotas da API
+# ✅ Rotas da API corrigidas
 @app.route("/api/salas")
 def get_salas():
     return jsonify(SALAS)
