@@ -3,40 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma Esportiva</title>
+    <title>Seleção de Salas Esportivas</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <header>
-        <h1>🏆 Plataforma Esportiva</h1>
-    </header>
+    <h1>Escolha sua Sala de Esporte</h1>
 
     <div class="container">
-        <h2>Escolha uma Sala</h2>
-        <div id="salas-container">
-            <!-- Salas serão carregadas aqui -->
-        </div>
+        <label for="sala">Sala:</label>
+        <select id="sala">
+            <option value="">Selecione uma sala</option>
+        </select>
 
-        <div id="selecao-dia" class="hidden">
-            <h2>Selecione um Dia</h2>
-            <select id="dias" onchange="carregarHorarios()">
-                <option value="">Selecione um dia</option>
-            </select>
-        </div>
+        <label for="dia">Dia:</label>
+        <select id="dia" disabled>
+            <option value="">Selecione um dia</option>
+        </select>
 
-        <div id="selecao-horario" class="hidden">
-            <h2>Escolha um Horário</h2>
-            <select id="horarios" onchange="carregarVideos()">
-                <option value="">Selecione um horário</option>
-            </select>
-        </div>
-
-        <div id="videos" class="hidden">
-            <h2>🏅 Vídeos Disponíveis</h2>
-            <div id="lista-videos"></div>
-        </div>
+        <label for="horario">Horário:</label>
+        <select id="horario" disabled>
+            <option value="">Selecione um horário</option>
+        </select>
     </div>
+
+    <div id="videos"></div>
 
     <script src="script.js"></script>
 </body>
