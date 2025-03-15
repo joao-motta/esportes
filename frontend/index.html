@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Vídeos</title>
+    <title>Plataforma Esportiva</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,13 +12,11 @@
         <h1>🏆 Plataforma Esportiva</h1>
     </header>
 
-
     <div class="container">
-        <h1>Selecione uma Sala</h1>
-        
-        <select id="salas" onchange="carregarDias()">
-            <option value="">Selecione uma sala</option>
-        </select>
+        <h2>Escolha uma Sala</h2>
+        <div id="salas-container">
+            <!-- Salas serão carregadas aqui -->
+        </div>
 
         <div id="selecao-dia" class="hidden">
             <h2>Selecione um Dia</h2>
@@ -28,15 +26,15 @@
         </div>
 
         <div id="selecao-horario" class="hidden">
-            <h2>Selecione um Horário</h2>
+            <h2>Escolha um Horário</h2>
             <select id="horarios" onchange="carregarVideos()">
                 <option value="">Selecione um horário</option>
             </select>
         </div>
 
         <div id="videos" class="hidden">
-            <h2>Vídeos Disponíveis</h2>
-            <ul id="lista-videos"></ul>
+            <h2>🏅 Vídeos Disponíveis</h2>
+            <div id="lista-videos"></div>
         </div>
     </div>
 
