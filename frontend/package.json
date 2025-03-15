@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "serve .",
-    "build": "cp -r frontend/* ./public/"
+    "build": "mkdir -p public && cp -r * public/"
   },
   "dependencies": {
     "serve": "^14.0.0"
