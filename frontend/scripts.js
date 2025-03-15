@@ -6,18 +6,12 @@ function carregarSalas() {
     fetch("/api/salas")
         .then(response => response.json())
         .then(data => {
-            let container = document.getElementById("salas-container");
-            container.innerHTML = "";
-
+            let select = document.getElementById("salas");
             data.forEach(sala => {
-                let div = document.createElement("div");
-                div.classList.add("sala");
-                div.innerHTML = `
-                    <img src="${sala.imagem}" alt="Imagem da ${sala.nome}">
-                    <p>${sala.nome}</p>
-                `;
-                div.onclick = () => selecionarSala(sala.id);
-                container.appendChild(div);
+                let option = document.createElement("option");
+                option.value = sala.id;
+                option.textContent = sala.nome;
+                select.appendChild(option);
             });
         });
 }
