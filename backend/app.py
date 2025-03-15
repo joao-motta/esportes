@@ -71,17 +71,37 @@ def get_videos(sala_id, dia, horario):
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
+    # Validação dos parâmetros
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
+    if "cameraIP" not in request.form or "dia" not in request.form or "horario" not in request.form:
+        return jsonify({"error": "Missing required parameters (cameraIP, dia, horario)"}), 400
 
     file = request.files["file"]
+    cameraIP = request.form["cameraIP"]
+    dia = request.form["dia"]
+    horario = request.form["horario"]
+
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
 
+    # Validações adicionais para os parâmetros
+    if not cameraIP or not dia or not horario:
+        return jsonify({"error": "cameraIP, dia, and horario are required"}), 400
+
     try:
+        # Envia o arquivo para o S3
         s3_client.upload_fileobj(file, S3_BUCKET, file.filename, ExtraArgs={"ACL": "public-read"})
         video_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file.filename}"
-        return jsonify({"message": "File uploaded successfully!", "url": video_url}), 200
+        
+        # Resposta com sucesso
+        return jsonify({
+            "message": "File uploaded successfully!",
+            "url": video_url,
+            "cameraIP": cameraIP,
+            "dia": dia,
+            "horario": horario
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
