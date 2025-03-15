@@ -42,6 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const diasContainer = document.getElementById("diasContainer");
     const horariosContainer = document.getElementById("horariosContainer");
 
+    // Exibir o nome da sala na página
+    const salaNome = document.getElementById("salaNome");
+    if (salaId && salaNome) {
+        salaNome.textContent = `Sala: ${salaId}`;
+    }
+
     // Carregar dias
     async function carregarDias() {
         try {
@@ -83,3 +89,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     carregarDias();
 });
+
