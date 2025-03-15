@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const salaSelect = document.getElementById("sala");
-    const irParaDiasButton = document.getElementById("irParaDias");
+    const irParaSelecaoButton = document.getElementById("irParaSelecao");
 
     // Carregar salas
     async function carregarSalas() {
@@ -21,14 +21,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Ativar botão após selecionar a sala
     salaSelect.addEventListener("change", function () {
-        irParaDiasButton.disabled = !this.value;
+        irParaSelecaoButton.disabled = !this.value;
     });
 
-    // Redirecionar para a página de dias
-    irParaDiasButton.addEventListener("click", function () {
+    // Redirecionar para a seleção de dia e horário
+    irParaSelecaoButton.addEventListener("click", function () {
         const salaId = salaSelect.value;
         if (salaId) {
-            window.location.href = `sala.html?sala=${salaId}`;
+            window.location.href = `selecionar.html?sala=${salaId}`;
         }
     });
 
@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const salaId = urlParams.get("sala");
     const diasContainer = document.getElementById("diasContainer");
+    const horariosContainer = document.getElementById("horariosContainer");
 
     // Carregar dias
     async function carregarDias() {
@@ -52,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 diaButton.textContent = dia;
                 diaButton.classList.add("dia-button");
                 diaButton.addEventListener("click", function () {
-                    window.location.href = `horarios.html?sala=${salaId}&dia=${dia}`;
+                    carregarHorarios(dia);
                 });
                 diasContainer.appendChild(diaButton);
             });
@@ -61,20 +62,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    carregarDias();
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const salaId = urlParams.get("sala");
-    const dia = urlParams.get("dia");
-    const horariosContainer = document.getElementById("horariosContainer");
-
     // Carregar horários
-    async function carregarHorarios() {
+    async function carregarHorarios(dia) {
         try {
             const response = await fetch(`https://esportes-x2p0.onrender.com/api/horarios/${salaId}/${dia}`);
             const horarios = await response.json();
+
+            horariosContainer.innerHTML = ''; // Limpa os horários anteriores
 
             horarios.forEach(horario => {
                 const horarioButton = document.createElement("button");
@@ -87,5 +81,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    carregarHorarios();
+    carregarDias();
 });

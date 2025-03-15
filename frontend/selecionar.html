@@ -1,24 +1,22 @@
-<!-- index.html -->
+<!-- selecionar.html -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seleção de Salas Esportivas</title>
+    <title>Seleção de Dia e Horário</title>
     <link rel="stylesheet" href="public/styles.css">
 </head>
 <body>
-    <h1>Escolha sua Sala de Esporte</h1>
+    <h1>Selecione o Dia e Horário</h1>
 
     <div class="container">
-        <label for="sala">Sala:</label>
-        <select id="sala">
-            <option value="">Selecione uma sala</option>
-        </select>
+        <div id="diasContainer" class="dias-container"></div>
     </div>
 
     <div class="container">
-        <button id="irParaSelecao" disabled>Ir para seleção de dia e horário</button>
+        <h2>Escolha o Horário</h2>
+        <div id="horariosContainer" class="horarios-container"></div>
     </div>
 
     <script src="public/scripts.js"></script>
