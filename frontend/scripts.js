@@ -1,83 +1,89 @@
 document.addEventListener("DOMContentLoaded", function () {
-  carregarSalas();
+    carregarSalas();
 });
 
 function carregarSalas() {
-  fetch("/api/salas")
-      .then(response => response.json())
-      .then(data => {
-          let select = document.getElementById("salas");
-          data.forEach(sala => {
-              let option = document.createElement("option");
-              option.value = sala.id;
-              option.textContent = sala.nome;
-              select.appendChild(option);
-          });
-      });
+    fetch("/api/salas")
+        .then(response => response.json())
+        .then(data => {
+            let container = document.getElementById("salas-container");
+            container.innerHTML = "";
+
+            data.forEach(sala => {
+                let div = document.createElement("div");
+                div.classList.add("sala");
+                div.innerHTML = `
+                    <img src="${sala.imagem}" alt="Imagem da ${sala.nome}">
+                    <p>${sala.nome}</p>
+                `;
+                div.onclick = () => selecionarSala(sala.id);
+                container.appendChild(div);
+            });
+        });
 }
 
-function carregarDias() {
-  let salaId = document.getElementById("salas").value;
-  if (!salaId) return;
+function selecionarSala(salaId) {
+    document.getElementById("selecao-dia").classList.remove("hidden");
+    carregarDias(salaId);
+}
 
-  fetch(`/api/dias/${salaId}`)
-      .then(response => response.json())
-      .then(data => {
-          let select = document.getElementById("dias");
-          select.innerHTML = '<option value="">Selecione um dia</option>';
-          data.forEach(dia => {
-              let option = document.createElement("option");
-              option.value = dia;
-              option.textContent = dia;
-              select.appendChild(option);
-          });
-
-          document.getElementById("selecao-dia").classList.remove("hidden");
-      });
+function carregarDias(salaId) {
+    fetch(`/api/dias/${salaId}`)
+        .then(response => response.json())
+        .then(data => {
+            let select = document.getElementById("dias");
+            select.innerHTML = '<option value="">Selecione um dia</option>';
+            data.forEach(dia => {
+                let option = document.createElement("option");
+                option.value = dia;
+                option.textContent = dia;
+                select.appendChild(option);
+            });
+        });
 }
 
 function carregarHorarios() {
-  let salaId = document.getElementById("salas").value;
-  let dia = document.getElementById("dias").value;
-  if (!salaId || !dia) return;
+    let salaId = document.getElementById("salas").value;
+    let dia = document.getElementById("dias").value;
 
-  fetch(`/api/horarios/${salaId}/${dia}`)
-      .then(response => response.json())
-      .then(data => {
-          let select = document.getElementById("horarios");
-          select.innerHTML = '<option value="">Selecione um horário</option>';
-          data.forEach(horario => {
-              let option = document.createElement("option");
-              option.value = horario;
-              option.textContent = horario;
-              select.appendChild(option);
-          });
+    fetch(`/api/horarios/${salaId}/${dia}`)
+        .then(response => response.json())
+        .then(data => {
+            let select = document.getElementById("horarios");
+            select.innerHTML = '<option value="">Selecione um horário</option>';
+            data.forEach(horario => {
+                let option = document.createElement("option");
+                option.value = horario;
+                option.textContent = horario;
+                select.appendChild(option);
+            });
 
-          document.getElementById("selecao-horario").classList.remove("hidden");
-      });
+            document.getElementById("selecao-horario").classList.remove("hidden");
+        });
 }
 
 function carregarVideos() {
-  let salaId = document.getElementById("salas").value;
-  let dia = document.getElementById("dias").value;
-  let horario = document.getElementById("horarios").value;
-  if (!salaId || !dia || !horario) return;
+    let salaId = document.getElementById("salas").value;
+    let dia = document.getElementById("dias").value;
+    let horario = document.getElementById("horarios").value;
 
-  fetch(`/api/videos/${salaId}/${dia}/${horario}`)
-      .then(response => response.json())
-      .then(data => {
-          let lista = document.getElementById("lista-videos");
-          lista.innerHTML = "";
-          data.forEach(video => {
-              let li = document.createElement("li");
-              let link = document.createElement("a");
-              link.href = video.url;
-              link.textContent = video.nome;
-              link.setAttribute("download", video.nome);
-              li.appendChild(link);
-              lista.appendChild(li);
-          });
+    fetch(`/api/videos/${salaId}/${dia}/${horario}`)
+        .then(response => response.json())
+        .then(data => {
+            let lista = document.getElementById("lista-videos");
+            lista.innerHTML = "";
+            
+            data.forEach(video => {
+                let div = document.createElement("div");
+                div.classList.add("video-item");
+                div.innerHTML = `
+                    <img src="${video.thumbnail}" alt="Thumb do ${video.nome}">
+                    <p>${video.nome}</p>
+                    <a href="${video.url}" download>📥 Baixar</a>
+                `;
+                lista.appendChild(div);
+            });
 
-          document.getElementById("videos").classList.remove("hidden");
-      });
+            document.getElementById("videos").classList.remove("hidden");
+        });
 }
