@@ -1,82 +1,40 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <title>Plataforma de Vídeos</title>
     <link rel="stylesheet" href="styles.css">
-
-    <title>Projeto</title>
 </head>
-
 <body>
-     <!-- Cabeçalho de informações do sistema -->
-    <header>
-        <div class="title">
-            <h2>Sistema de Cobrança e Pagamento</h2>
-        </div>
-        <div class="banner">
-            <img src="https://www.geralinvestimentos.com.br/wp-content/uploads/2017/09/BANNER.jpg?width=1200&height=630&fit=crop"
-                alt="y">
-        </div>
-    </header>
 
-     <!-- Opções para adicionar um novo item -->
-     <section class="newItem">
-        <div class="form-group">
-            <label for="newDocumentNumber">Nr Documento:</label>
-            <input type="text" id="newDocumentNumber" placeholder="Nr Documento:">
-        </div>
-        <div class="form-group">
-            <label for="newCompanyName">Razao Social:</label>
-            <input type="text" id="newCompanyName" placeholder="Razao Social:">
-        </div>
-        <div class="form-group">
-            <label for="newPrice">Valor:</label>
-            <input type="text" id="newPrice" placeholder="Valor:">
-        </div>
-        <div class="form-group">
-            <label for="newDueDate">Data Vencimento:</label>
-            <input type="date" id="newDueDate" placeholder="Data Vencimento:" class="wider-input">
-        </div>
-        <div class="form-group">
-            <label for="newStatus">Status:</label>
-            <select id="newStatus">
-                <option value="Pago">Pago</option>
-                <option value="Nao_Pago">Não Pago</option>
-            </select>
-        </div >
-        <div class="form-group">
-            <label for="newDocumentType">Tipo Documento:</label>
-            <select id="newDocumentType">
-                <option value="AP">Contas a Pagar</option>
-                <option value="AR">Contas a Receber</option>
-                <option value="OUTRO">Outro</option>
+    <div class="container">
+        <h1>Selecione uma Sala</h1>
+        
+        <select id="salas" onchange="carregarDias()">
+            <option value="">Selecione uma sala</option>
+        </select>
+
+        <div id="selecao-dia" class="hidden">
+            <h2>Selecione um Dia</h2>
+            <select id="dias" onchange="carregarHorarios()">
+                <option value="">Selecione um dia</option>
             </select>
         </div>
-        <div class="form-group">
-            <span onclick="newItem()" class="addBtn">Adicionar</span>
-    </section>
 
-    <!-- Tabela com items existentes -->
-    <section class="items">
-        <table id="myTable">
-            <tr>
-                <th>Tipo Documento</th>
-                <th>Nr Documento</th>
-                <th>Razao Social</th>
-                <th>Valor</th>
-                <th>Data Vencimento</th>
-                <th>Status</th>
-                <th><img src="https://cdn-icons-png.flaticon.com/512/126/126468.png" width="15px" height="15px"></th>
-            </tr>
-        </table>
-    </section>
+        <div id="selecao-horario" class="hidden">
+            <h2>Selecione um Horário</h2>
+            <select id="horarios" onchange="carregarVideos()">
+                <option value="">Selecione um horário</option>
+            </select>
+        </div>
 
-    <script src="scripts.js"></script>
+        <div id="videos" class="hidden">
+            <h2>Vídeos Disponíveis</h2>
+            <ul id="lista-videos"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-
 </html>
-
-
