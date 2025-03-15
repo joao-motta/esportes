@@ -1,9 +1,11 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seleção de Salas Esportivas</title>
-    <!-- Corrigir o caminho para o arquivo CSS -->
-    <link rel="stylesheet" href="/public/styles.css">
+    <link rel="stylesheet" href="public/styles.css">
 </head>
 <body>
     <h1>Escolha sua Sala de Esporte</h1>
@@ -13,21 +15,12 @@
         <select id="sala">
             <option value="">Selecione uma sala</option>
         </select>
-
-        <label for="dia">Dia:</label>
-        <select id="dia" disabled>
-            <option value="">Selecione um dia</option>
-        </select>
-
-        <label for="horario">Horário:</label>
-        <select id="horario" disabled>
-            <option value="">Selecione um horário</option>
-        </select>
     </div>
 
-    <div id="videos"></div>
+    <div class="container">
+        <button id="irParaDias" disabled>Ir para seleção de dias</button>
+    </div>
 
-    <!-- Corrigir o caminho para o arquivo JS -->
-    <script src="/public/scripts.js"></script>
+    <script src="public/scripts.js"></script>
 </body>
 </html>

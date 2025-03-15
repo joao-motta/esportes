@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     const salaSelect = document.getElementById("sala");
-    const diaSelect = document.getElementById("dia");
-    const horarioSelect = document.getElementById("horario");
-    const videosContainer = document.getElementById("videos");
+    const irParaDiasButton = document.getElementById("irParaDias");
 
-    // Função para carregar as salas
+    // Carregar salas
     async function carregarSalas() {
         try {
             const response = await fetch("https://esportes-x2p0.onrender.com/api/salas");
@@ -21,87 +19,73 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Carregar dias ao selecionar uma sala
-    salaSelect.addEventListener("change", async function () {
-        diaSelect.innerHTML = '<option value="">Selecione um dia</option>';
-        horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
-        diaSelect.disabled = true;
-        horarioSelect.disabled = true;
+    // Ativar botão após selecionar a sala
+    salaSelect.addEventListener("change", function () {
+        irParaDiasButton.disabled = !this.value;
+    });
 
-        if (!this.value) return;
+    // Redirecionar para a página de dias
+    irParaDiasButton.addEventListener("click", function () {
+        const salaId = salaSelect.value;
+        if (salaId) {
+            window.location.href = `sala.html?sala=${salaId}`;
+        }
+    });
 
+    // Carregar salas ao iniciar a página
+    carregarSalas();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const salaId = urlParams.get("sala");
+    const diasContainer = document.getElementById("diasContainer");
+
+    // Carregar dias
+    async function carregarDias() {
         try {
-            const response = await fetch(`https://esportes-x2p0.onrender.com/api/dias/${this.value}`);
+            const response = await fetch(`https://esportes-x2p0.onrender.com/api/dias/${salaId}`);
             const dias = await response.json();
 
-            if (dias.length > 0) {
-                diaSelect.disabled = false;
-                dias.forEach(dia => {
-                    const option = document.createElement("option");
-                    option.value = dia;
-                    option.textContent = dia;
-                    diaSelect.appendChild(option);
+            dias.forEach(dia => {
+                const diaButton = document.createElement("button");
+                diaButton.textContent = dia;
+                diaButton.classList.add("dia-button");
+                diaButton.addEventListener("click", function () {
+                    window.location.href = `horarios.html?sala=${salaId}&dia=${dia}`;
                 });
-            }
+                diasContainer.appendChild(diaButton);
+            });
         } catch (error) {
             console.error("Erro ao carregar dias:", error);
         }
-    });
+    }
 
-    // Carregar horários ao selecionar um dia
-    diaSelect.addEventListener("change", async function () {
-        horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
-        horarioSelect.disabled = true;
+    carregarDias();
+});
 
-        if (!this.value) return;
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const salaId = urlParams.get("sala");
+    const dia = urlParams.get("dia");
+    const horariosContainer = document.getElementById("horariosContainer");
 
+    // Carregar horários
+    async function carregarHorarios() {
         try {
-            const response = await fetch(`https://esportes-x2p0.onrender.com/api/horarios/${salaSelect.value}/${this.value}`);
+            const response = await fetch(`https://esportes-x2p0.onrender.com/api/horarios/${salaId}/${dia}`);
             const horarios = await response.json();
 
-            if (horarios.length > 0) {
-                horarioSelect.disabled = false;
-                horarios.forEach(horario => {
-                    const option = document.createElement("option");
-                    option.value = horario;
-                    option.textContent = horario;
-                    horarioSelect.appendChild(option);
-                });
-            }
+            horarios.forEach(horario => {
+                const horarioButton = document.createElement("button");
+                horarioButton.textContent = horario;
+                horarioButton.classList.add("horario-button");
+                horariosContainer.appendChild(horarioButton);
+            });
         } catch (error) {
             console.error("Erro ao carregar horários:", error);
         }
-    });
+    }
 
-    // Carregar vídeos ao selecionar um horário
-    horarioSelect.addEventListener("change", async function () {
-        videosContainer.innerHTML = "";
-
-        if (!this.value) return;
-
-        try {
-            const response = await fetch(`https://esportes-x2p0.onrender.com/api/videos/${salaSelect.value}/${diaSelect.value}/${this.value}`);
-            const videos = await response.json();
-
-            if (videos.length > 0) {
-                videos.forEach(video => {
-                    const videoElement = document.createElement("div");
-                    videoElement.classList.add("video-item");
-                    videoElement.innerHTML = `
-                        <img src="${video.thumbnail}" alt="${video.nome}">
-                        <p>${video.nome}</p>
-                        <a href="${video.url}" download>Baixar</a>
-                    `;
-                    videosContainer.appendChild(videoElement);
-                });
-            } else {
-                videosContainer.innerHTML = "<p>Nenhum vídeo disponível.</p>";
-            }
-        } catch (error) {
-            console.error("Erro ao carregar vídeos:", error);
-        }
-    });
-
-    // Carregar as salas ao iniciar a página
-    carregarSalas();
+    carregarHorarios();
 });
