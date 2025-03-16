@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Plataforma de vídeos de esportes",
   "main": "index.html",
- "scripts": {
+"scripts": {
   "start": "serve .",
-  "build": "mkdir -p public && cp -r frontend/index.html frontend/css frontend/js public/"
+  "build": "mkdir -p public && cp -r frontend/* public/"
 }
 ,
   "dependencies": {
