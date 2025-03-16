@@ -5,7 +5,7 @@
   "main": "index.html",
  "scripts": {
   "start": "serve .",
-  "build": "mkdir -p public && cp -r frontend/* public/"
+  "build": "mkdir -p public && cp -r frontend/index.html frontend/css frontend/js public/"
 }
 ,
   "dependencies": {
