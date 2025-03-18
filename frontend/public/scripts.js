@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Verifique se o Amplify foi carregado antes de configurar
+    if (typeof Amplify === "undefined") {
+        console.error("Amplify não foi carregado corretamente");
+        return; // Saia da função se Amplify não estiver definido
+    }
+
     // Configurar o Amplify
     fetch('https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js')
         .then(response => response.text())  // Lê o arquivo como texto
