@@ -1,0 +1,15 @@
+{
+    "cameras": [
+        {
+            "cliente": "Academia XYZ",
+            "nome": "QuadraTenis1",
+            "ip": "10.0.0.25",
+            "porta": "80",
+            "usuario": "admin",
+            "senha": "Loja2010@",
+            "logos": [],
+            "data_adicao": "17-03-2025",
+            "pasta_destino": "videos/Academia XYZ/QuadraTenis1/10.0.0.25"
+        }
+    ]
+}
