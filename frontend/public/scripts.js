@@ -1,7 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Configurar o Amplify
-    const awsconfig = window.awsconfig; // Acessa a configuração global
-    Amplify.configure(awsconfig); // Configura o Amplify com as configurações
+    fetch('https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js')
+        .then(response => response.text())
+        .then(data => {
+            // Transformar a configuração carregada em um objeto JS válido
+            const awsconfig = JSON.parse(data); // Transformar em um objeto
+            Amplify.configure(awsconfig); // Configurar o Amplify com a configuração carregada
+        })
+        .catch(error => {
+            console.error("Erro ao carregar aws-exports.js:", error);
+        });
 
     // Função para carregar as salas
     const salaSelect = document.getElementById("sala");
