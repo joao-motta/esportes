@@ -10,6 +10,11 @@
       "StackName": "amplify-frontesportes-dev-acb79",
       "StackId": "arn:aws:cloudformation:us-east-2:775546346061:stack/amplify-frontesportes-dev-acb79/7c83d6e0-0399-11f0-86b1-02316a80a507",
       "AmplifyAppId": "d39dhu1gxg9qq7"
+    },
+    "categories": {
+      "auth": {
+        "frontesportes12454913": {}
+      }
     }
   }
 }

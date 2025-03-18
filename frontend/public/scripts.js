@@ -1,5 +1,5 @@
 const Amplify = window.aws_amplify;
-import awsconfig from './aws-exports';  // Arquivo gerado pelo Amplify CLI
+import awsconfig from './src/aws-exports';  // Arquivo gerado pelo Amplify CLI
 Amplify.configure(awsconfig);
 
 document.addEventListener("DOMContentLoaded", function () {
