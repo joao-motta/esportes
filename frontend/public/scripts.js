@@ -1,6 +1,8 @@
-const Amplify = window.aws_amplify;
-import awsconfig from './src/aws-exports';  // Arquivo gerado pelo Amplify CLI
+import { Amplify } from 'aws-amplify';
+import awsconfig from 'https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js';
+
 Amplify.configure(awsconfig);
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const salaSelect = document.getElementById("sala");
