@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Verifique se o Amplify foi carregado antes de configurar
+    // Verifique se o Amplify foi carregado corretamente
     if (typeof Amplify === "undefined") {
-        console.error("Amplify não foi carregado corretamente");
-        return; // Saia da função se Amplify não estiver definido
+        console.error("Amplify não foi carregado corretamente.");
+        return;  // Interrompe a execução se Amplify não estiver definido
     }
 
     // Configurar o Amplify
@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.text())  // Lê o arquivo como texto
         .then(data => {
             // Use eval para executar o código JavaScript
-            const awsconfig = eval(data); // Transformar a string em código JavaScript e obter o objeto
-            Amplify.configure(awsconfig); // Configurar o Amplify com a configuração carregada
+            const awsconfig = eval(data); // Transforma a string em código JavaScript
+            Amplify.configure(awsconfig); // Configura o Amplify com a configuração carregada
         })
         .catch(error => {
             console.error("Erro ao carregar aws-exports.js:", error);
