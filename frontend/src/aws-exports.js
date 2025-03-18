@@ -10,21 +10,15 @@ const awsmobile = {
     "oauth": {},
     "aws_cognito_username_attributes": [],
     "aws_cognito_social_providers": [],
-    "aws_cognito_signup_attributes": [
-        "EMAIL"
-    ],
+    "aws_cognito_signup_attributes": ["EMAIL"],
     "aws_cognito_mfa_configuration": "OFF",
-    "aws_cognito_mfa_types": [
-        "SMS"
-    ],
+    "aws_cognito_mfa_types": ["SMS"],
     "aws_cognito_password_protection_settings": {
         "passwordPolicyMinLength": 8,
         "passwordPolicyCharacters": []
     },
-    "aws_cognito_verification_mechanisms": [
-        "EMAIL"
-    ]
+    "aws_cognito_verification_mechanisms": ["EMAIL"]
 };
 
-// Torna o objeto globalmente acessível no navegador
-window.awsconfig = awsmobile;
+// Usando export padrão para ser compatível com importação no navegador
+export default awsmobile;
