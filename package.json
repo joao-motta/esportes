@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Plataforma de vídeos de esportes",
   "main": "index.html",
-"scripts": {
-  "build": "mkdir -p public && cp -r frontend/* public/ && rm -rf public/public"
-}
-,
+  "scripts": {
+    "start": "serve .",
+    "build": "mkdir -p public && cp -r ./frontend/* ./public/ && rm -rf ./public/public"
+  },
   "dependencies": {
     "serve": "^14.0.0"
   },
