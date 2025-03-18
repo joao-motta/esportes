@@ -1,5 +1,5 @@
 // Importando o Amplify como um módulo ES6
-import { Amplify } from 'https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js';
+import { Amplify } from 'https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     // Agora o Amplify é carregado corretamente
