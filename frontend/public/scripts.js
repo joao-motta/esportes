@@ -1,14 +1,12 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Verifica se o Amplify foi carregado corretamente
-    if (typeof Amplify === "undefined") {
-        console.error("Amplify não foi carregado corretamente.");
-        return;  // Interrompe a execução se Amplify não estiver definido
-    }
+// Importando o Amplify como um módulo ES6
+import { Amplify } from 'https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js';
 
-    // Configurar o Amplify
+document.addEventListener("DOMContentLoaded", function () {
+    // Agora o Amplify é carregado corretamente
     fetch('https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js')
-        .then(response => response.text())  // Lê o arquivo como texto
+        .then(response => response.text())
         .then(data => {
+            // Aqui o arquivo aws-exports.js é processado corretamente
             const script = document.createElement('script');
             script.type = 'module';
             script.textContent = `
