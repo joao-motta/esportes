@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Configurar o Amplify
     fetch('https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js')
-        .then(response => response.text())
+        .then(response => response.text())  // Lê o arquivo como texto
         .then(data => {
-            // Transformar a configuração carregada em um objeto JS válido
-            const awsconfig = JSON.parse(data); // Transformar em um objeto
+            // Use eval para executar o código JavaScript
+            const awsconfig = eval(data); // Transformar a string em código JavaScript e obter o objeto
             Amplify.configure(awsconfig); // Configurar o Amplify com a configuração carregada
         })
         .catch(error => {
