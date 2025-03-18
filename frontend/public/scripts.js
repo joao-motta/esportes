@@ -1,23 +1,21 @@
-// Importando o Amplify como um módulo ES6
-import { Amplify } from 'https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js';
-
 document.addEventListener("DOMContentLoaded", function () {
-    // Agora o Amplify é carregado corretamente
-    fetch('https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js')
-        .then(response => response.text())
-        .then(data => {
-            // Aqui o arquivo aws-exports.js é processado corretamente
-            const script = document.createElement('script');
-            script.type = 'module';
-            script.textContent = `
-                import awsconfig from 'data:text/javascript;base64,${btoa(data)}';
+    // Verifique se o Amplify foi carregado corretamente
+    if (typeof window.aws_amplify !== "undefined") {
+        const Amplify = window.aws_amplify; // Obter Amplify globalmente
+
+        // Carregar o arquivo aws-exports.js
+        fetch('https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js')
+            .then(response => response.text())
+            .then(data => {
+                const awsconfig = eval(data); // Evite usar eval se possível, para segurança
                 Amplify.configure(awsconfig);
-            `;
-            document.head.appendChild(script);
-        })
-        .catch(error => {
-            console.error("Erro ao carregar aws-exports.js:", error);
-        });
+            })
+            .catch(error => {
+                console.error("Erro ao carregar aws-exports.js:", error);
+            });
+    } else {
+        console.error("Amplify não foi carregado corretamente.");
+    }
 
     // Função para carregar as salas
     const salaSelect = document.getElementById("sala");
