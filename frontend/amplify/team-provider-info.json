@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-frontesportes-dev-acb79-authRole",
+      "UnauthRoleArn": "arn:aws:iam::775546346061:role/amplify-frontesportes-dev-acb79-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::775546346061:role/amplify-frontesportes-dev-acb79-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-frontesportes-dev-acb79-deployment",
+      "UnauthRoleName": "amplify-frontesportes-dev-acb79-unauthRole",
+      "StackName": "amplify-frontesportes-dev-acb79",
+      "StackId": "arn:aws:cloudformation:us-east-2:775546346061:stack/amplify-frontesportes-dev-acb79/7c83d6e0-0399-11f0-86b1-02316a80a507",
+      "AmplifyAppId": "d39dhu1gxg9qq7"
+    }
+  }
+}
