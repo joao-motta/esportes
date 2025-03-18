@@ -26,5 +26,5 @@ const awsmobile = {
     ]
 };
 
-
-export default awsmobile;
+// Torna o objeto globalmente acessível no navegador
+window.awsconfig = awsmobile;

@@ -1,19 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Carregar o arquivo aws-exports.js como JSON
-    fetch('https://main.d1636gox262hyh.amplifyapp.com/aws-exports.js')
-        .then(response => response.text())  // Pega o conteúdo do arquivo como texto
-        .then(data => {
-            try {
-                // Se o conteúdo for um JSON válido, use JSON.parse
-                const awsconfig = JSON.parse(data);
-                Amplify.configure(awsconfig);  // Configura o Amplify com as configurações do awsconfig
-            } catch (error) {
-                console.error("Erro ao processar aws-exports.js:", error);
-            }
-        })
-        .catch(error => {
-            console.error("Erro ao carregar aws-exports.js:", error);
-        });
+    // Configurar o Amplify
+    const awsconfig = window.awsconfig; // Acessa a configuração global
+    Amplify.configure(awsconfig); // Configura o Amplify com as configurações
 
     // Função para carregar as salas
     const salaSelect = document.getElementById("sala");
