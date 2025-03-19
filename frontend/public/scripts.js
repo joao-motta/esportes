@@ -1,4 +1,4 @@
-import Amplify from 'aws-amplify';
+// import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';  // Arquivo gerado pelo Amplify CLI
 Amplify.configure(awsconfig);
 
