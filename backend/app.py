@@ -153,5 +153,44 @@ def list_videos():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+
+@app.route("/listavideos", methods=["GET"])
+def get_uploads():
+    cameraIP = request.args.get("cameraIP")
+    dia = request.args.get("dia")
+    horario = request.args.get("horario")
+    
+    try:
+        conn = sqlite3.connect("uploads.db")
+        cursor = conn.cursor()
+        
+        query = "SELECT * FROM uploads WHERE 1=1"
+        params = []
+        
+        if cameraIP:
+            query += " AND cameraIP = ?"
+            params.append(cameraIP)
+        if dia:
+            query += " AND dia = ?"
+            params.append(dia)
+        if horario:
+            query += " AND horario = ?"
+            params.append(horario)
+        
+        cursor.execute(query, params)
+        uploads = cursor.fetchall()
+        conn.close()
+        
+        result = [
+            {"id": row[0], "cameraIP": row[1], "dia": row[2], "horario": row[3], "video_url": row[4]}
+            for row in uploads
+        ]
+        
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+      
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
