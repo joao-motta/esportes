@@ -2,12 +2,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import boto3
-from dotenv import load_dotenv
-
-
-load_dotenv()  # Carrega as variáveis do .env
-
-
 
 
 app = Flask(__name__)
@@ -49,7 +43,6 @@ VIDEOS = {
 # Configuração da AWS S3
 S3_BUCKET = "video-esporte"
 S3_REGION = "us-east-2"
-# Agora, você pode acessar as variáveis com os.getenv()
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
 
