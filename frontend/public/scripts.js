@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Carregar salas
     async function carregarSalas() {
         try {
-            const response = await fetch(http://3.141.32.43:5000/api/salas");
+            const response = await fetch("http://3.141.32.43:5000/api/salas");
             const salas = await response.json();
 
             salas.forEach(sala => {
