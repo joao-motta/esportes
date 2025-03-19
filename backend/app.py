@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import sqlite3
 import os
 import boto3
-
 
 app = Flask(__name__)
 CORS(app)
 
-# ✅ Estrutura de dados simulados corrigida
+# Estrutura de dados simulados corrigida
 SALAS = [
     {"id": 1, "nome": "Quadra Futebol", "imagem": "https://via.placeholder.com/150"},
     {"id": 2, "nome": "Ginásio Basquete", "imagem": "https://via.placeholder.com/150"}
@@ -40,6 +40,25 @@ VIDEOS = {
     ]
 }
 
+# Conectar ao banco de dados SQLite e criar tabela se não existir
+def init_db():
+    conn = sqlite3.connect("uploads.db")
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS uploads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cameraIP TEXT NOT NULL,
+            dia TEXT NOT NULL,
+            horario TEXT NOT NULL,
+            video_url TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()  # Inicializa o banco de dados
+
+
 # Configuração da AWS S3
 S3_BUCKET = "video-esporte"
 S3_REGION = "us-east-2"
@@ -53,7 +72,7 @@ s3_client = boto3.client(
     aws_secret_access_key=AWS_SECRET_KEY,
 )
 
-# ✅ Rotas da API corrigidas
+# Rotas da API corrigidas
 @app.route("/api/salas")
 def get_salas():
     return jsonify(SALAS)
@@ -95,6 +114,15 @@ def upload_file():
         s3_client.upload_fileobj(file, S3_BUCKET, file.filename, ExtraArgs={"ACL": "public-read"})
         video_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file.filename}"
         
+        # Armazena os dados no SQLite
+        conn = sqlite3.connect("uploads.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO uploads (cameraIP, dia, horario, video_url)
+            VALUES (?, ?, ?, ?)""", (cameraIP, dia, horario, video_url))
+        conn.commit()
+        conn.close()
+
         # Resposta com sucesso
         return jsonify({
             "message": "File uploaded successfully!",
