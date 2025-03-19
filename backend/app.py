@@ -3,6 +3,8 @@ from flask_cors import CORS
 import os
 import boto3
 
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -42,8 +44,9 @@ VIDEOS = {
 # Configuração da AWS S3
 S3_BUCKET = "video-esporte"
 S3_REGION = "us-east-2"
-AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
-AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+
 
 s3_client = boto3.client(
     "s3",
