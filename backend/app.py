@@ -105,21 +105,30 @@ def upload_file():
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
 
-    # Validações adicionais para os parâmetros
-    if not cameraIP or not dia or not horario:
-        return jsonify({"error": "cameraIP, dia, and horario are required"}), 400
-
     try:
         # Envia o arquivo para o S3
         s3_client.upload_fileobj(file, S3_BUCKET, file.filename, ExtraArgs={"ACL": "public-read"})
         video_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file.filename}"
         
-        # Armazena os dados no SQLite
-        conn = sqlite3.connect("uploads.db")
+        # Salvar no banco SQLite
+        conn = sqlite3.connect("uploads.db")  # Certifique-se de que esse é o nome correto do arquivo
         cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO uploads (cameraIP, dia, horario, video_url)
-            VALUES (?, ?, ?, ?)""", (cameraIP, dia, horario, video_url))
+
+        # Criar a tabela se não existir
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS uploads (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                cameraIP TEXT,
+                dia TEXT,
+                horario TEXT,
+                video_url TEXT
+            )
+        ''')
+        conn.commit()
+
+        # Inserir dados
+        cursor.execute("INSERT INTO uploads (cameraIP, dia, horario, video_url) VALUES (?, ?, ?, ?)",
+                       (cameraIP, dia, horario, video_url))
         conn.commit()
         conn.close()
 
