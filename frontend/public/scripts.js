@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Carregar salas
     async function carregarSalas() {
         try {
-            const response = await fetch("https://esportes-x2p0.onrender.com/api/salas");
+            const response = await fetch(http://3.141.32.43:5000/api/salas");
             const salas = await response.json();
 
             salas.forEach(sala => {
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const salaNome = document.getElementById("salaNome");
     if (salaId && salaNome) {
         // Buscar nome da sala através do ID
-        fetch("https://esportes-x2p0.onrender.com/api/salas")
+        fetch("http://3.141.32.43:5000/api/salas")
             .then(response => response.json())
             .then(salas => {
                 const sala = salas.find(s => s.id == salaId);
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Carregar dias
     async function carregarDias() {
         try {
-            const response = await fetch(`https://esportes-x2p0.onrender.com/api/dias/${salaId}`);
+            const response = await fetch(`http://3.141.32.43:5000/api/dias/${salaId}`);
             const dias = await response.json();
 
             dias.forEach(dia => {
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Carregar horários
     async function carregarHorarios(dia) {
         try {
-            const response = await fetch(`https://esportes-x2p0.onrender.com/api/horarios/${salaId}/${dia}`);
+            const response = await fetch(`http://3.141.32.43:5000/api/horarios/${salaId}/${dia}`);
             const horarios = await response.json();
 
             horariosContainer.innerHTML = ''; // Limpa os horários anteriores
