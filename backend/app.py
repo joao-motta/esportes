@@ -7,46 +7,15 @@ import boto3
 app = Flask(__name__)
 CORS(app)
 
-# Estrutura de dados simulados corrigida
-SALAS = [
-    {"id": 1, "nome": "Quadra Futebol", "imagem": "https://via.placeholder.com/150"},
-    {"id": 2, "nome": "Ginásio Basquete", "imagem": "https://via.placeholder.com/150"}
-]
-
-DIAS = {
-    1: ["2025-03-15", "2025-03-16"],
-    2: ["2025-03-15"]
-}
-
-HORARIOS = {
-    (1, "2025-03-15"): ["10:00", "14:00"],
-    (2, "2025-03-15"): ["15:00"]
-}
-
-VIDEOS = {
-    (1, "2025-03-15", "10:00"): [
-        {
-            "nome": "Treino Futebol",
-            "thumbnail": "https://via.placeholder.com/150",
-            "url": "https://exemplo.com/video1.mp4"
-        }
-    ],
-    (2, "2025-03-15", "15:00"): [
-        {
-            "nome": "Treino Basquete",
-            "thumbnail": "https://via.placeholder.com/150",
-            "url": "https://exemplo.com/video2.mp4"
-        }
-    ]
-}
-
-# Conectar ao banco de dados SQLite e criar tabela se não existir
+# Conectar ao banco de dados SQLite e criar a tabela uploads
 def init_db():
     conn = sqlite3.connect("uploads.db")
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS uploads (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cliente TEXT NOT NULL,
+            quadra TEXT NOT NULL,
             cameraIP TEXT NOT NULL,
             dia TEXT NOT NULL,
             horario TEXT NOT NULL,
@@ -57,7 +26,6 @@ def init_db():
     conn.close()
 
 init_db()  # Inicializa o banco de dados
-
 
 # Configuração da AWS S3
 S3_BUCKET = "video-esporte"
@@ -72,32 +40,63 @@ s3_client = boto3.client(
     aws_secret_access_key=AWS_SECRET_KEY,
 )
 
-# Rotas da API corrigidas
+# API para listar as salas (agora baseado na tabela 'uploads')
 @app.route("/api/salas")
 def get_salas():
-    return jsonify(SALAS)
+    try:
+        conn = sqlite3.connect("uploads.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT quadra FROM uploads")
+        salas = cursor.fetchall()
+        conn.close()
 
-@app.route("/api/dias/<int:sala_id>")
-def get_dias(sala_id):
-    return jsonify(DIAS.get(sala_id, []))
+        result = [{"nome": row[0]} for row in salas]
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-@app.route("/api/horarios/<int:sala_id>/<dia>")
-def get_horarios(sala_id, dia):
-    return jsonify(HORARIOS.get((sala_id, dia), []))
+# API para listar os dias de uma sala
+@app.route("/api/dias/<string:quadra>")
+def get_dias(quadra):
+    try:
+        conn = sqlite3.connect("uploads.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT dia FROM uploads WHERE quadra = ?", (quadra,))
+        dias = cursor.fetchall()
+        conn.close()
 
-@app.route("/api/videos/<int:sala_id>/<dia>/<horario>")
-def get_videos(sala_id, dia, horario):
-    return jsonify(VIDEOS.get((sala_id, dia, horario), []))
+        result = [{"dia": row[0]} for row in dias]
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
+# API para listar os horários de uma sala e dia
+@app.route("/api/horarios/<string:quadra>/<string:dia>")
+def get_horarios(quadra, dia):
+    try:
+        conn = sqlite3.connect("uploads.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT horario FROM uploads WHERE quadra = ? AND dia = ?", (quadra, dia))
+        horarios = cursor.fetchall()
+        conn.close()
+
+        result = [{"horario": row[0]} for row in horarios]
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# API para upload de vídeo
 @app.route("/upload", methods=["POST"])
 def upload_file():
     # Validação dos parâmetros
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
-    if "cameraIP" not in request.form or "dia" not in request.form or "horario" not in request.form:
-        return jsonify({"error": "Missing required parameters (cameraIP, dia, horario)"}), 400
+    if "cliente" not in request.form or "quadra" not in request.form or "cameraIP" not in request.form or "dia" not in request.form or "horario" not in request.form:
+        return jsonify({"error": "Missing required parameters (cliente, quadra, cameraIP, dia, horario)"}), 400
 
     file = request.files["file"]
+    cliente = request.form["cliente"]
+    quadra = request.form["quadra"]
     cameraIP = request.form["cameraIP"]
     dia = request.form["dia"]
     horario = request.form["horario"]
@@ -111,24 +110,12 @@ def upload_file():
         video_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file.filename}"
         
         # Salvar no banco SQLite
-        conn = sqlite3.connect("uploads.db")  # Certifique-se de que esse é o nome correto do arquivo
+        conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
 
-        # Criar a tabela se não existir
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS uploads (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                cameraIP TEXT,
-                dia TEXT,
-                horario TEXT,
-                video_url TEXT
-            )
-        ''')
-        conn.commit()
-
-        # Inserir dados
-        cursor.execute("INSERT INTO uploads (cameraIP, dia, horario, video_url) VALUES (?, ?, ?, ?)",
-                       (cameraIP, dia, horario, video_url))
+        # Inserir os dados do upload diretamente na tabela uploads
+        cursor.execute("INSERT INTO uploads (cliente, quadra, cameraIP, dia, horario, video_url) VALUES (?, ?, ?, ?, ?, ?)",
+                       (cliente, quadra, cameraIP, dia, horario, video_url))
         conn.commit()
         conn.close()
 
@@ -136,6 +123,8 @@ def upload_file():
         return jsonify({
             "message": "File uploaded successfully!",
             "url": video_url,
+            "cliente": cliente,
+            "quadra": quadra,
             "cameraIP": cameraIP,
             "dia": dia,
             "horario": horario
@@ -153,10 +142,10 @@ def list_videos():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
 @app.route("/listavideos", methods=["GET"])
 def get_uploads():
+    cliente = request.args.get("cliente")
+    quadra = request.args.get("quadra")
     cameraIP = request.args.get("cameraIP")
     dia = request.args.get("dia")
     horario = request.args.get("horario")
@@ -168,6 +157,12 @@ def get_uploads():
         query = "SELECT * FROM uploads WHERE 1=1"
         params = []
         
+        if cliente:
+            query += " AND cliente = ?"
+            params.append(cliente)
+        if quadra:
+            query += " AND quadra = ?"
+            params.append(quadra)
         if cameraIP:
             query += " AND cameraIP = ?"
             params.append(cameraIP)
@@ -183,14 +178,13 @@ def get_uploads():
         conn.close()
         
         result = [
-            {"id": row[0], "cameraIP": row[1], "dia": row[2], "horario": row[3], "video_url": row[4]}
+            {"id": row[0], "cliente": row[1], "quadra": row[2], "cameraIP": row[3], "dia": row[4], "horario": row[5], "video_url": row[6]}
             for row in uploads
         ]
         
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-      
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

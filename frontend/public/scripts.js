@@ -1,70 +1,85 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const salaSelect = document.getElementById("sala");
+    const clienteSelect = document.getElementById("cliente");
     const irParaSelecaoButton = document.getElementById("irParaSelecao");
 
-    async function carregarSalas() {
+    async function carregarClientes() {
         try {
             const response = await fetch("http://3.141.32.43:5000/api/salas");
             const salas = await response.json();
 
-            salas.forEach(sala => {
+            const clientes = [...new Set(salas.map(sala => sala.cliente))];  // Extrai clientes únicos
+            clientes.forEach(cliente => {
                 const option = document.createElement("option");
-                option.value = sala.id;
-                option.textContent = sala.nome;
-                salaSelect.appendChild(option);
+                option.value = cliente;
+                option.textContent = cliente;
+                clienteSelect.appendChild(option);
             });
         } catch (error) {
-            console.error("Erro ao carregar salas:", error);
+            console.error("Erro ao carregar clientes:", error);
         }
     }
 
-    salaSelect.addEventListener("change", function () {
+    clienteSelect.addEventListener("change", function () {
         irParaSelecaoButton.disabled = !this.value;
     });
 
     irParaSelecaoButton.addEventListener("click", function () {
-        const salaId = salaSelect.value;
-        if (salaId) {
-            window.location.href = `selecionar.html?sala=${salaId}`;
+        const cliente = clienteSelect.value;
+        if (cliente) {
+            window.location.href = `selecionar.html?cliente=${cliente}`;
         }
     });
 
-    carregarSalas();
+    carregarClientes();
 });
-
-// Código para selecionar dia, horário e buscar vídeos
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const salaId = urlParams.get("sala");
+    const cliente = urlParams.get("cliente");
+    const quadrasContainer = document.getElementById("quadrasContainer");
     const diasContainer = document.getElementById("diasContainer");
     const horariosContainer = document.getElementById("horariosContainer");
-    const videosContainer = document.createElement("div");
-    videosContainer.id = "videosContainer";
-    document.body.appendChild(videosContainer);
+    const videosContainer = document.getElementById("videosContainer");
 
-    const salaNome = document.getElementById("salaNome");
-    if (salaId && salaNome) {
-        fetch("http://3.141.32.43:5000/api/salas")
-            .then(response => response.json())
-            .then(salas => {
-                const sala = salas.find(s => s.id == salaId);
-                salaNome.textContent = sala ? `Sala: ${sala.nome}` : 'Sala não encontrada';
-            })
-            .catch(error => console.error("Erro ao buscar nome da sala:", error));
+    const clienteNome = document.getElementById("clienteNome");
+    if (cliente && clienteNome) {
+        clienteNome.textContent = `Cliente: ${cliente}`;
     }
 
-    async function carregarDias() {
+    async function carregarQuadras() {
         try {
-            const response = await fetch(`http://3.141.32.43:5000/api/dias/${salaId}`);
+            const response = await fetch("http://3.141.32.43:5000/api/salas");
+            const salas = await response.json();
+
+            const quadras = [...new Set(salas.filter(sala => sala.cliente === cliente).map(sala => sala.quadra))];
+            
+            quadras.forEach(quadra => {
+                const quadraButton = document.createElement("button");
+                quadraButton.textContent = quadra;
+                quadraButton.classList.add("quadra-button");
+                quadraButton.addEventListener("click", function () {
+                    carregarDias(quadra);
+                });
+                quadrasContainer.appendChild(quadraButton);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar quadras:", error);
+        }
+    }
+
+    async function carregarDias(quadra) {
+        try {
+            const response = await fetch(`http://3.141.32.43:5000/api/dias/${quadra}`);
             const dias = await response.json();
+
+            diasContainer.innerHTML = '';
 
             dias.forEach(dia => {
                 const diaButton = document.createElement("button");
                 diaButton.textContent = dia;
                 diaButton.classList.add("dia-button");
                 diaButton.addEventListener("click", function () {
-                    carregarHorarios(dia);
+                    carregarHorarios(quadra, dia);
                 });
                 diasContainer.appendChild(diaButton);
             });
@@ -73,9 +88,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    async function carregarHorarios(dia) {
+    async function carregarHorarios(quadra, dia) {
         try {
-            const response = await fetch(`http://3.141.32.43:5000/api/horarios/${salaId}/${dia}`);
+            const response = await fetch(`http://3.141.32.43:5000/api/horarios/${quadra}/${dia}`);
             const horarios = await response.json();
 
             horariosContainer.innerHTML = '';
@@ -85,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 horarioButton.textContent = horario;
                 horarioButton.classList.add("horario-button");
                 horarioButton.addEventListener("click", function () {
-                    buscarVideos(dia, horario);
+                    buscarVideos(quadra, dia, horario);
                 });
                 horariosContainer.appendChild(horarioButton);
             });
@@ -94,9 +109,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    async function buscarVideos(dia, horario) {
+    async function buscarVideos(quadra, dia, horario) {
         try {
-            const response = await fetch(`http://3.141.32.43:5000/listavideos?cameraIP=${salaId}&dia=${dia}&horario=${horario}`);
+            const response = await fetch(`http://3.141.32.43:5000/listavideos?cliente=${cliente}&quadra=${quadra}&dia=${dia}&horario=${horario}`);
             const videos = await response.json();
 
             videosContainer.innerHTML = "";
@@ -121,5 +136,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    carregarDias();
+    carregarQuadras();
 });
