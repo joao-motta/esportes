@@ -108,15 +108,26 @@ document.addEventListener("DOMContentLoaded", function () {
         async function carregarHorarios(diaId) {
             const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
             const horarios = await response.json();
-            horariosContainer.innerHTML = '';
+            horariosContainer.innerHTML = ''; // Limpa a lista de horários
             horarios.forEach(horario => {
                 const horarioButton = document.createElement("button");
                 horarioButton.textContent = horario.horario;
                 horarioButton.dataset.id = horario.id;
                 horarioButton.classList.add("horario-button");
+        
+                // Adiciona a lógica de seleção do horário
                 horarioButton.addEventListener("click", function () {
-                    buscarVideos(dia, horario.id);
+                    // Adiciona/remover a classe 'selected' para marcar o botão clicado
+                    const selectedButton = document.querySelector(".horario-button.selected");
+                    if (selectedButton) {
+                        selectedButton.classList.remove("selected");
+                    }
+                    horarioButton.classList.add("selected");
+        
+                    // Chama a função de busca de vídeos com os ids dos dia e horário
+                    buscarVideos(diaId, horario.id);
                 });
+        
                 horariosContainer.appendChild(horarioButton);
             });
         }
