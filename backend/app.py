@@ -190,6 +190,11 @@ def upload_file():
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
 
+         # Verificar se o cliente já existe, caso contrário, adicionar
+        cursor.execute("INSERT OR IGNORE INTO clientes (nome_cliente) VALUES (?)", (cliente,))
+        cursor.execute("SELECT id FROM clientes WHERE nome_cliente = ?", (cliente,))
+        cliente_id = cursor.fetchone()[0]
+
         # Verificar se a sala já existe, caso contrário, adicionar
         cursor.execute("INSERT OR IGNORE INTO salas (cliente_id, nome_sala) VALUES (?, ?)", (cliente, quadra))
         cursor.execute("SELECT id FROM salas WHERE nome_sala = ? AND cliente_id = ?", (quadra, cliente))
