@@ -1,12 +1,7 @@
-// import Amplify from 'aws-amplify';
-// import awsconfig from './aws-exports';  // Arquivo gerado pelo Amplify CLI
-// Amplify.configure(awsconfig);
-
 document.addEventListener("DOMContentLoaded", function () {
     const salaSelect = document.getElementById("sala");
     const irParaSelecaoButton = document.getElementById("irParaSelecao");
 
-    // Carregar salas
     async function carregarSalas() {
         try {
             const response = await fetch("http://3.141.32.43:5000/api/salas");
@@ -23,12 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Ativar botão após selecionar a sala
     salaSelect.addEventListener("change", function () {
         irParaSelecaoButton.disabled = !this.value;
     });
 
-    // Redirecionar para a seleção de dia e horário
     irParaSelecaoButton.addEventListener("click", function () {
         const salaId = salaSelect.value;
         if (salaId) {
@@ -36,34 +29,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Carregar salas ao iniciar a página
     carregarSalas();
 });
+
+// Código para selecionar dia, horário e buscar vídeos
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const salaId = urlParams.get("sala");
     const diasContainer = document.getElementById("diasContainer");
     const horariosContainer = document.getElementById("horariosContainer");
+    const videosContainer = document.createElement("div");
+    videosContainer.id = "videosContainer";
+    document.body.appendChild(videosContainer);
 
-    // Exibir o nome da sala na página
     const salaNome = document.getElementById("salaNome");
     if (salaId && salaNome) {
-        // Buscar nome da sala através do ID
         fetch("http://3.141.32.43:5000/api/salas")
             .then(response => response.json())
             .then(salas => {
                 const sala = salas.find(s => s.id == salaId);
-                if (sala) {
-                    salaNome.textContent = `Sala: ${sala.nome}`; // Exibe o nome da sala
-                } else {
-                    salaNome.textContent = 'Sala não encontrada';
-                }
+                salaNome.textContent = sala ? `Sala: ${sala.nome}` : 'Sala não encontrada';
             })
             .catch(error => console.error("Erro ao buscar nome da sala:", error));
     }
 
-    // Carregar dias
     async function carregarDias() {
         try {
             const response = await fetch(`http://3.141.32.43:5000/api/dias/${salaId}`);
@@ -83,22 +73,51 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Carregar horários
     async function carregarHorarios(dia) {
         try {
             const response = await fetch(`http://3.141.32.43:5000/api/horarios/${salaId}/${dia}`);
             const horarios = await response.json();
 
-            horariosContainer.innerHTML = ''; // Limpa os horários anteriores
+            horariosContainer.innerHTML = '';
 
             horarios.forEach(horario => {
                 const horarioButton = document.createElement("button");
                 horarioButton.textContent = horario;
                 horarioButton.classList.add("horario-button");
+                horarioButton.addEventListener("click", function () {
+                    buscarVideos(dia, horario);
+                });
                 horariosContainer.appendChild(horarioButton);
             });
         } catch (error) {
             console.error("Erro ao carregar horários:", error);
+        }
+    }
+
+    async function buscarVideos(dia, horario) {
+        try {
+            const response = await fetch(`http://3.141.32.43:5000/listavideos?cameraIP=${salaId}&dia=${dia}&horario=${horario}`);
+            const videos = await response.json();
+
+            videosContainer.innerHTML = "";
+
+            if (videos.length === 0) {
+                videosContainer.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
+                return;
+            }
+
+            videos.forEach(video => {
+                const videoElement = document.createElement("div");
+                videoElement.classList.add("video-item");
+                videoElement.innerHTML = `
+                    <h3>${video.nome}</h3>
+                    <img src="${video.thumbnail}" alt="Thumbnail">
+                    <a href="${video.url}" target="_blank">Assistir</a>
+                `;
+                videosContainer.appendChild(videoElement);
+            });
+        } catch (error) {
+            console.error("Erro ao buscar vídeos:", error);
         }
     }
 
