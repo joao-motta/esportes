@@ -230,47 +230,59 @@ def upload_file():
 
 @app.route("/listavideos", methods=["GET"])
 def get_uploads():
-    cliente = request.args.get("cliente")
-    quadra = request.args.get("quadra")
-    cameraIP = request.args.get("cameraIP")
-    dia = request.args.get("dia")
-    horario = request.args.get("horario")
+    cliente_nome = request.args.get("cliente")
+    quadra_nome = request.args.get("quadra")
+    dia_data = request.args.get("dia")
+    horario_hora = request.args.get("horario")
     
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
         
-        query = "SELECT * FROM uploads WHERE 1=1"
+        query = """
+            SELECT uploads.id, clientes.nome_cliente, salas.nome_sala, dias.dia, horarios.horario, uploads.video_url
+            FROM uploads
+            JOIN clientes ON uploads.cliente_id = clientes.id
+            JOIN salas ON uploads.sala_id = salas.id
+            JOIN dias ON uploads.dia_id = dias.id
+            JOIN horarios ON uploads.horario = horarios.horario
+            WHERE 1=1
+        """
         params = []
         
-        if cliente:
-            query += " AND cliente = ?"
-            params.append(cliente)
-        if quadra:
-            query += " AND quadra = ?"
-            params.append(quadra)
-        if cameraIP:
-            query += " AND cameraIP = ?"
-            params.append(cameraIP)
-        if dia:
-            query += " AND dia = ?"
-            params.append(dia)
-        if horario:
-            query += " AND horario = ?"
-            params.append(horario)
-        
+        if cliente_nome:
+            query += " AND clientes.nome_cliente = ?"
+            params.append(cliente_nome)
+        if quadra_nome:
+            query += " AND salas.nome_sala = ?"
+            params.append(quadra_nome)
+        if dia_data:
+            query += " AND dias.dia = ?"
+            params.append(dia_data)
+        if horario_hora:
+            query += " AND horarios.horario = ?"
+            params.append(horario_hora)
+
         cursor.execute(query, params)
         uploads = cursor.fetchall()
         conn.close()
         
         result = [
-            {"id": row[0], "cliente": row[1], "quadra": row[2], "cameraIP": row[3], "dia": row[4], "horario": row[5], "video_url": row[6]}
+            {
+                "id": row[0],
+                "cliente": row[1],
+                "quadra": row[2],
+                "dia": row[3],
+                "horario": row[4],
+                "video_url": row[5]
+            }
             for row in uploads
         ]
         
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
