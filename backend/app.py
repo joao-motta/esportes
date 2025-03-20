@@ -198,6 +198,13 @@ def upload_file():
         # Verificar se o dia já existe, caso contrário, adicionar
         cursor.execute("INSERT OR IGNORE INTO dias (sala_id, cliente_id, dia) VALUES (?, ?, ?)", (sala_id, cliente, dia))
 
+        # Obter o dia_id correspondente ao dia inserido
+        cursor.execute("SELECT id FROM dias WHERE sala_id = ? AND cliente_id = ? AND dia = ?", (sala_id, cliente, dia))
+        dia_id = cursor.fetchone()[0]
+
+        # Verificar se o horário já existe, caso contrário, adicionar
+        cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente, dia_id, horario))
+
         # Verificar se o horário já existe, caso contrário, adicionar
         cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente, dia_id, horario))
 
