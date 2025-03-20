@@ -191,31 +191,31 @@ def upload_file():
         cursor = conn.cursor()
 
          # Verificar se o cliente já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO clientes (nome_cliente) VALUES (?)", (cliente,))
-        cursor.execute("SELECT id FROM clientes WHERE nome_cliente = ?", (cliente,))
+        cursor.execute("INSERT OR IGNORE INTO clientes (nome_cliente) VALUES (?)", (cliente))
+        cursor.execute("SELECT id FROM clientes WHERE nome_cliente = ?", (cliente))
         cliente_id = cursor.fetchone()[0]
 
         # Verificar se a sala já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO salas (cliente_id, nome_sala) VALUES (?, ?)", (cliente, quadra))
-        cursor.execute("SELECT id FROM salas WHERE nome_sala = ? AND cliente_id = ?", (quadra, cliente))
+        cursor.execute("INSERT OR IGNORE INTO salas (cliente_id, nome_sala) VALUES (?, ?)", (cliente_id, quadra))
+        cursor.execute("SELECT id FROM salas WHERE nome_sala = ? AND cliente_id = ?", (quadra, cliente_id))
         sala_id = cursor.fetchone()[0]
 
         # Verificar se o dia já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO dias (sala_id, cliente_id, dia) VALUES (?, ?, ?)", (sala_id, cliente, dia))
+        cursor.execute("INSERT OR IGNORE INTO dias (sala_id, cliente_id, dia) VALUES (?, ?, ?)", (sala_id, cliente_id, dia))
 
         # Obter o dia_id correspondente ao dia inserido
-        cursor.execute("SELECT id FROM dias WHERE sala_id = ? AND cliente_id = ? AND dia = ?", (sala_id, cliente, dia))
+        cursor.execute("SELECT id FROM dias WHERE sala_id = ? AND cliente_id = ? AND dia = ?", (sala_id, cliente_id, dia))
         dia_id = cursor.fetchone()[0]
 
         # Verificar se o horário já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente, dia_id, horario))
+        cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente_id, dia_id, horario))
 
         # Verificar se o horário já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente, dia_id, horario))
+        cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente_id, dia_id, horario))
 
         # Inserir os dados do upload
         cursor.execute("INSERT INTO uploads (cliente_id, sala_id, dia_id, horario, video_url) VALUES (?, ?, ?, ?, ?)",
-                       (cliente, sala_id, dia_id, horario, video_url))
+                       (cliente_id, sala_id, dia_id, horario, video_url))
         conn.commit()
         conn.close()
 
