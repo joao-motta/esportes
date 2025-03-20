@@ -250,7 +250,7 @@ def get_uploads():
             JOIN clientes ON uploads.cliente_id = clientes.id
             JOIN salas ON uploads.sala_id = salas.id
             JOIN dias ON uploads.dia_id = dias.id
-            JOIN horarios ON uploads.horario_id = horarios.horario_id
+            JOIN horarios ON uploads.horario_id = horarios.id
             WHERE 1=1
         """
         params = []
