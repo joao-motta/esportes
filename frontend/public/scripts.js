@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     diaButton.dataset.id = dia.id;
                     diaButton.classList.add("dia-button");
                     diaButton.addEventListener("click", function () {
-                        carregarHorarios(dia.id);
+                        carregarHorarios(clienteId, salaId, dia.id); // Passando os parâmetros corretos
                     });
                     diasContainer.appendChild(diaButton);
                 });
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                         horarioButton.classList.add("selected");
     
-                        buscarVideos(diaId, horario.id);
+                        buscarVideos(clienteId, salaId, diaId, horario.id); // Passando os parâmetros corretos
                     });
     
                     horariosContainer.appendChild(horarioButton);
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Por favor, selecione um dia e horário.");
                 return;
             }
-            buscarVideos(selectedDay.textContent, selectedTime.textContent);
+            buscarVideos(clienteId, salaId, selectedDay.dataset.id, selectedTime.dataset.id);
         });
 
         carregarDias(clienteId, salaId); // Chama a função assim que a página carregar
