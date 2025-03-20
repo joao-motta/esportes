@@ -7,6 +7,13 @@ import boto3
 app = Flask(__name__)
 CORS(app)
 
+
+# Configuração da AWS S3
+S3_BUCKET = "video-esporte"
+S3_REGION = "us-east-2"
+AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
+
 # Conectar ao banco de dados SQLite e criar tabelas corretamente
 def init_db():
     conn = sqlite3.connect("uploads.db")
