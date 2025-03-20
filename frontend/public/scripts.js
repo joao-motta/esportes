@@ -91,11 +91,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const buscarVideosButton = document.getElementById("buscarVideos");
 
         async function carregarDias() {
-            const response = await fetch(`${apiBaseUrl}/dias/${salaId}/${clienteId}`);
+            const response = await fetch(`${apiBaseUrl}/dias/${clienteId}/${salaId}`);
             const dias = await response.json();
             dias.forEach(dia => {
                 const diaButton = document.createElement("button");
                 diaButton.textContent = dia.dia;
+                diaButton.dataset.id = dia.id;
                 diaButton.classList.add("dia-button");
                 diaButton.addEventListener("click", function () {
                     carregarHorarios(dia.dia);
@@ -104,13 +105,14 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        async function carregarHorarios(dia) {
-            const response = await fetch(`${apiBaseUrl}/horarios/${salaId}/${dia}/${clienteId}`);
+        async function carregarHorarios(diaId) {
+            const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
             const horarios = await response.json();
             horariosContainer.innerHTML = '';
             horarios.forEach(horario => {
                 const horarioButton = document.createElement("button");
                 horarioButton.textContent = horario.horario;
+                horarioButton.dataset.id = horario.id;
                 horarioButton.classList.add("horario-button");
                 horarioButton.addEventListener("click", function () {
                     buscarVideos(dia, horario.horario);
@@ -119,8 +121,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        async function buscarVideos(dia, horario) {
-            const response = await fetch(`${apiBaseUrl}/videos/${clienteId}/${salaId}/${dia}/${horario}`);
+        async function buscarVideos(diaId, horarioId) {
+            const response = await fetch(`${apiBaseUrl}/videos/${clienteId}/${salaId}/${diaId}/${horarioId}`);
             const videos = await response.json();
             videosContainer.innerHTML = "";
             if (videos.length === 0) {

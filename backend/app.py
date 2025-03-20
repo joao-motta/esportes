@@ -70,11 +70,13 @@ def init_db():
             cliente_id INTEGER NOT NULL,
             sala_id INTEGER NOT NULL,
             dia_id INTEGER NOT NULL,
-            horario TEXT NOT NULL,
+            horario_id INTEGER NOT NULL,
+            cameraip text NOT NULL,
             video_url TEXT NOT NULL,
             FOREIGN KEY (cliente_id) REFERENCES clientes(id),
             FOREIGN KEY (sala_id) REFERENCES salas(id),
-            FOREIGN KEY (dia_id) REFERENCES dias(id)
+            FOREIGN KEY (dia_id) REFERENCES dias(id),
+            FOREIGN KEY (horario_id) REFERENCES horarios(id)
         )
     ''')
 
@@ -134,17 +136,17 @@ def get_horarios(dia_id,sala_id,cliente_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT horario FROM horarios WHERE dia_id = ? AND sala_id = ? AND cliente_id = ?", (dia_id,sala_id,cliente_id,))
+        cursor.execute("SELECT id, horario FROM horarios WHERE dia_id = ? AND sala_id = ? AND cliente_id = ?", (dia_id,sala_id,cliente_id,))
         horarios = cursor.fetchall()
         conn.close()
 
-        result = [{"horario": row[0]} for row in horarios]
+        result = [{"id": row[0], "horario": row[0]} for row in horarios]
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/videos/<int:cliente_id>/<int:sala_id>/<int:dia_id>/<horario>")
-def get_videos(cliente_id, sala_id, dia_id, horario):
+def get_videos(cliente_id, sala_id, dia_id, horario_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
@@ -207,10 +209,13 @@ def upload_file():
 
         # Verificar se o horário já existe, caso contrário, adicionar
         cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente_id, dia_id, horario))
+        cursor.execute("SELECT id FROM horarios WHERE sala_id = ? AND cliente_id = ? AND dia_id = ? AND horario = ?", (sala_id, cliente_id, dia_id, horario))
+        horario_id = cursor.fetchone()[0]
+
 
         # Inserir os dados do upload
-        cursor.execute("INSERT INTO uploads (cliente_id, sala_id, dia_id, horario, video_url) VALUES (?, ?, ?, ?, ?)",
-                       (cliente_id, sala_id, dia_id, horario, video_url))
+        cursor.execute("INSERT INTO uploads (cliente_id, sala_id, dia_id, horario_id, cameraIP, video_url) VALUES (?, ?, ?, ?, ?, ?)",
+                       (cliente_id, sala_id, dia_id, horario_id, cameraIP, video_url))
         conn.commit()
         conn.close()
 
@@ -240,7 +245,7 @@ def get_uploads():
         cursor = conn.cursor()
         
         query = """
-            SELECT uploads.id, clientes.nome_cliente, salas.nome_sala, dias.dia, horarios.horario, uploads.video_url
+            SELECT uploads.id, clientes.nome_cliente, salas.nome_sala, dias.dia, horarios.horario, uploads.cameraIP, uploads.video_url
             FROM uploads
             JOIN clientes ON uploads.cliente_id = clientes.id
             JOIN salas ON uploads.sala_id = salas.id
@@ -274,7 +279,8 @@ def get_uploads():
                 "quadra": row[2],
                 "dia": row[3],
                 "horario": row[4],
-                "video_url": row[5]
+                "cameraIP": row[5],
+                "video_url": row[6]
             }
             for row in uploads
         ]
