@@ -145,15 +145,15 @@ def get_horarios(dia_id,sala_id,cliente_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/api/videos/<int:cliente_id>/<int:sala_id>/<int:dia_id>/<horario>")
+@app.route("/api/videos/<int:cliente_id>/<int:sala_id>/<int:dia_id>/<int:horario_id>")
 def get_videos(cliente_id, sala_id, dia_id, horario_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
         cursor.execute("""
             SELECT video_url FROM uploads
-            WHERE cliente_id = ? AND sala_id = ? AND dia_id = ? AND horario = ?
-        """, (cliente_id, sala_id, dia_id, horario))
+            WHERE cliente_id = ? AND sala_id = ? AND dia_id = ? AND horario_id = ?
+        """, (cliente_id, sala_id, dia_id, horario_id))
         videos = cursor.fetchall()
         conn.close()
 
