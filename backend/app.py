@@ -46,7 +46,7 @@ def get_clientes():
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT clientes FROM uploads")
+        cursor.execute("SELECT DISTINCT cliente FROM uploads")
         clientes = cursor.fetchall()
         conn.close()
 
