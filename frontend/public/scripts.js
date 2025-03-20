@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 diaButton.dataset.id = dia.id;
                 diaButton.classList.add("dia-button");
                 diaButton.addEventListener("click", function () {
-                    carregarHorarios(dia.dia);
+                    carregarHorarios(dia.id);
                 });
                 diasContainer.appendChild(diaButton);
             });
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 horarioButton.dataset.id = horario.id;
                 horarioButton.classList.add("horario-button");
                 horarioButton.addEventListener("click", function () {
-                    buscarVideos(dia, horario.horario);
+                    buscarVideos(dia, horario.id);
                 });
                 horariosContainer.appendChild(horarioButton);
             });
