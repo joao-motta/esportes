@@ -114,12 +114,12 @@ def get_salas(cliente_id):
         return jsonify({"error": str(e)}), 500
 
 # Rota para listar dias disponíveis para uma sala específica
-@app.route("/api/dias/<int:sala_id>")
-def get_dias(sala_id):
+@app.route("/api/dias/<int:cliente_id>/<int:sala_id>")
+def get_dias(sala_id,cliente_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT id, dia FROM dias WHERE sala_id = ?", (sala_id,))
+        cursor.execute("SELECT id, dia FROM dias WHERE sala_id = ? AND cliente_id = ?", (sala_id,cliente_id,))
         dias = cursor.fetchall()
         conn.close()
 
@@ -129,12 +129,12 @@ def get_dias(sala_id):
         return jsonify({"error": str(e)}), 500
 
 # Rota para listar horários disponíveis para um dia específico
-@app.route("/api/horarios/<int:dia_id>")
-def get_horarios(dia_id):
+@app.route("/api/horarios/<int:cliente_id>/<int:sala_id>/<int:dia_id>")
+def get_horarios(dia_id,sala_id,cliente_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT horario FROM horarios WHERE dia_id = ?", (dia_id,))
+        cursor.execute("SELECT horario FROM horarios WHERE dia_id = ? AND sala_id = ? AND cliente_id = ?", (dia_id,sala_id,cliente_id,))
         horarios = cursor.fetchall()
         conn.close()
 
