@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const videosContainer = document.getElementById("videosContainer");
         const buscarVideosButton = document.getElementById("buscarVideos");
 
-        async function carregarDias() {
+        async function carregarDias(clienteId, salaId) {
             const response = await fetch(`${apiBaseUrl}/dias/${clienteId}/${salaId}`);
             const dias = await response.json();
             dias.forEach(dia => {
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        async function carregarHorarios(diaId) {
+        async function carregarHorarios(clienteId, salaId, diaId) {
             const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
             const horarios = await response.json();
             horariosContainer.innerHTML = ''; // Limpa a lista de horários
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        async function buscarVideos(diaId, horarioId) {
+        async function buscarVideos(clienteId, salaId, diaId, horarioId) {
             const response = await fetch(`${apiBaseUrl}/videos/${clienteId}/${salaId}/${diaId}/${horarioId}`);
             const videos = await response.json();
             videosContainer.innerHTML = "";
