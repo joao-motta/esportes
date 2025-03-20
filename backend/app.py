@@ -40,6 +40,21 @@ s3_client = boto3.client(
     aws_secret_access_key=AWS_SECRET_KEY,
 )
 
+# API para listar as clientes (agora baseado na tabela 'uploads')
+@app.route("/api/clientes")
+def get_clientes():
+    try:
+        conn = sqlite3.connect("uploads.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT clientes FROM uploads")
+        clientes = cursor.fetchall()
+        conn.close()
+
+        result = [{"nome": row[0]} for row in clientes]
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # API para listar as salas (agora baseado na tabela 'uploads')
 @app.route("/api/salas")
 def get_salas():
