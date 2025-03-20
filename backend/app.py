@@ -140,7 +140,7 @@ def get_horarios(dia_id,sala_id,cliente_id):
         horarios = cursor.fetchall()
         conn.close()
 
-        result = [{"id": row[0], "horario": row[0]} for row in horarios]
+        result = [{"id": row[0], "horario": row[1]} for row in horarios]
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
