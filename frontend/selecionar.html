@@ -8,7 +8,21 @@
     <link rel="stylesheet" href="public/styles.css">
 </head>
 <body>
-    <h1>Selecione o Dia do Jogo</h1>
+    <h1>Selecione o Cliente, Sala, Dia e Horário</h1>
+
+    <div class="container">
+        <label for="clientes">Cliente:</label>
+        <select id="clientes">
+            <option value="">Selecione um cliente</option>
+        </select>
+    </div>
+    
+    <div class="container">
+        <label for="salas">Sala:</label>
+        <select id="salas" disabled>
+            <option value="">Selecione uma sala</option>
+        </select>
+    </div>
 
     <div class="container">
         <div id="clienteNome"></div> <!-- Exibe o nome do cliente selecionado -->
@@ -16,12 +30,17 @@
     </div>
 
     <div class="container">
+        <h2>Escolha o Dia</h2>
         <div id="diasContainer" class="dias-container"></div>
     </div>
 
     <div class="container">
         <h2>Escolha o Horário</h2>
         <div id="horariosContainer" class="horarios-container"></div>
+    </div>
+
+    <div class="container">
+        <button id="buscarVideos" disabled>Buscar Vídeos</button>
     </div>
 
     <div class="container">

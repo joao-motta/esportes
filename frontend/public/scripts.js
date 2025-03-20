@@ -1,20 +1,34 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const clienteNome = urlParams.get("cliente");
-    const salaNome = urlParams.get("sala");
+    const apiBaseUrl = "http://3.141.32.43:5000/api";
 
-    // Página 1 - Selecione Cliente (index.html)
+    // Função genérica para carregar opções de dropdown
+    async function carregarOptions(apiUrl, elementId, placeholder = "Selecione uma opção") {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const selectElement = document.getElementById(elementId);
+        selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+        data.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.id;
+            option.textContent = item.nome || item.dia || item.horario; // Ajustar conforme a API
+            selectElement.appendChild(option);
+        });
+    }
+
+    // Página 1 - Selecione Cliente
     if (document.getElementById("cliente")) {
         const clienteSelect = document.getElementById("cliente");
         const irParaSalaButton = document.getElementById("irParaSala");
+        const loadingMessage = document.getElementById("loadingMessage"); // Carregamento
 
         async function carregarClientes() {
-            const response = await fetch("http://3.141.32.43:5000/api/clientes");
+            loadingMessage.style.display = 'block'; // Exibe a mensagem de carregamento
+            const response = await fetch(`${apiBaseUrl}/clientes`);
             const clientes = await response.json();
-            
+            loadingMessage.style.display = 'none'; // Oculta a mensagem de carregamento
             clientes.forEach(cliente => {
                 const option = document.createElement("option");
-                option.value = cliente.nome;
+                option.value = cliente.id;
                 option.textContent = cliente.nome;
                 clienteSelect.appendChild(option);
             });
@@ -25,33 +39,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         irParaSalaButton.addEventListener("click", function () {
-            if (clienteSelect.value) {
-                window.location.href = `sala.html?cliente=${encodeURIComponent(clienteSelect.value)}`;
+            const clienteId = clienteSelect.value;
+            if (clienteId) {
+                window.location.href = `sala.html?cliente=${clienteId}`;
             }
         });
 
         carregarClientes();
     }
 
-    // Página 2 - Selecione Sala (sala.html)
+    // Página 2 - Selecione Sala
     if (document.getElementById("sala")) {
-        if (!clienteNome) {
-            alert("Erro: Cliente não selecionado.");
-            window.location.href = "index.html";
-            return;
-        }
-
-        document.getElementById("clienteNome").textContent = `Cliente: ${clienteNome}`;
+        const urlParams = new URLSearchParams(window.location.search);
+        const clienteId = urlParams.get("cliente");
         const salaSelect = document.getElementById("sala");
         const irParaSelecaoButton = document.getElementById("irParaSelecao");
 
         async function carregarSalas() {
-            const response = await fetch(`http://3.141.32.43:5000/api/salas?cliente=${encodeURIComponent(clienteNome)}`);
+            const response = await fetch(`${apiBaseUrl}/salas?cliente_id=${clienteId}`);
             const salas = await response.json();
-            
             salas.forEach(sala => {
                 const option = document.createElement("option");
-                option.value = sala.nome;
+                option.value = sala.id;
                 option.textContent = sala.nome;
                 salaSelect.appendChild(option);
             });
@@ -62,80 +71,85 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         irParaSelecaoButton.addEventListener("click", function () {
-            if (salaSelect.value) {
-                window.location.href = `selecionar.html?cliente=${encodeURIComponent(clienteNome)}&sala=${encodeURIComponent(salaSelect.value)}`;
+            const salaId = salaSelect.value;
+            if (salaId) {
+                window.location.href = `selecionar.html?cliente=${clienteId}&sala=${salaId}`;
             }
         });
 
         carregarSalas();
     }
 
-    // Página 3 - Selecione Dia, Horário e Vídeos (selecionar.html)
+    // Página 3 - Selecione Dia, Horário e Vídeos
     if (document.getElementById("diasContainer")) {
-        if (!clienteNome || !salaNome) {
-            alert("Erro: Cliente ou Sala não selecionados corretamente.");
-            window.location.href = "index.html";
-            return;
-        }
-
-        document.getElementById("clienteNome").textContent = `Cliente: ${clienteNome}`;
-        document.getElementById("salaNome").textContent = `Sala: ${salaNome}`;
+        const urlParams = new URLSearchParams(window.location.search);
+        const clienteId = urlParams.get("cliente");
+        const salaId = urlParams.get("sala");
+        const diasContainer = document.getElementById("diasContainer");
+        const horariosContainer = document.getElementById("horariosContainer");
+        const videosContainer = document.getElementById("videosContainer");
+        const buscarVideosButton = document.getElementById("buscarVideos");
 
         async function carregarDias() {
-            const response = await fetch(`http://3.141.32.43:5000/api/dias?sala=${encodeURIComponent(salaNome)}`);
+            const response = await fetch(`${apiBaseUrl}/dias/${salaId}?cliente_id=${clienteId}`);
             const dias = await response.json();
-            const diasContainer = document.getElementById("diasContainer");
-
             dias.forEach(dia => {
                 const diaButton = document.createElement("button");
-                diaButton.textContent = dia;
+                diaButton.textContent = dia.dia;
                 diaButton.classList.add("dia-button");
                 diaButton.addEventListener("click", function () {
-                    carregarHorarios(dia);
+                    carregarHorarios(dia.dia);
                 });
                 diasContainer.appendChild(diaButton);
             });
         }
 
         async function carregarHorarios(dia) {
-            const response = await fetch(`http://3.141.32.43:5000/api/horarios?sala=${encodeURIComponent(salaNome)}&dia=${dia}`);
+            const response = await fetch(`${apiBaseUrl}/horarios/${salaId}/${dia}?cliente_id=${clienteId}`);
             const horarios = await response.json();
-            const horariosContainer = document.getElementById("horariosContainer");
             horariosContainer.innerHTML = '';
-
             horarios.forEach(horario => {
                 const horarioButton = document.createElement("button");
-                horarioButton.textContent = horario;
+                horarioButton.textContent = horario.horario;
                 horarioButton.classList.add("horario-button");
                 horarioButton.addEventListener("click", function () {
-                    buscarVideos(dia, horario);
+                    buscarVideos(dia, horario.horario);
                 });
                 horariosContainer.appendChild(horarioButton);
             });
         }
 
         async function buscarVideos(dia, horario) {
-            const response = await fetch(`http://3.141.32.43:5000/listavideos?sala=${encodeURIComponent(salaNome)}&dia=${dia}&horario=${horario}`);
+            const response = await fetch(`${apiBaseUrl}/videos?cliente=${clienteId}&sala=${salaId}&dia=${dia}&horario=${horario}`);
             const videos = await response.json();
-            const videosContainer = document.getElementById("videosContainer");
             videosContainer.innerHTML = "";
-
             if (videos.length === 0) {
                 videosContainer.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
                 return;
             }
-
             videos.forEach(video => {
                 const videoElement = document.createElement("div");
                 videoElement.classList.add("video-item");
                 videoElement.innerHTML = `
-                    <h3>${video.nome}</h3>
-                    <img src="${video.thumbnail}" alt="Thumbnail">
-                    <a href="${video.url}" target="_blank">Assistir</a>
+                    <h3>Vídeo</h3>
+                    <a href="${video.video_url}" target="_blank">
+                        <img src="thumbnail_placeholder.jpg" alt="Thumbnail" />
+                        Assistir
+                    </a>
                 `;
                 videosContainer.appendChild(videoElement);
             });
         }
+
+        buscarVideosButton.addEventListener("click", function () {
+            const selectedDay = document.querySelector(".dia-button.selected");
+            const selectedTime = document.querySelector(".horario-button.selected");
+            if (!selectedDay || !selectedTime) {
+                alert("Por favor, selecione um dia e horário.");
+                return;
+            }
+            buscarVideos(selectedDay.textContent, selectedTime.textContent);
+        });
 
         carregarDias();
     }

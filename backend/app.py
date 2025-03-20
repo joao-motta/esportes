@@ -7,91 +7,127 @@ import boto3
 app = Flask(__name__)
 CORS(app)
 
-# Conectar ao banco de dados SQLite e criar a tabela uploads
+# Conectar ao banco de dados SQLite e criar tabelas corretamente
 def init_db():
     conn = sqlite3.connect("uploads.db")
     cursor = conn.cursor()
+
+    # Tabela de Clientes
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS clientes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome_cliente TEXT NOT NULL
+        )
+    ''')
+
+    # Tabela de Salas associada a Clientes
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS salas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cliente_id INTEGER NOT NULL,
+            nome_sala TEXT NOT NULL,
+            FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+        )
+    ''')
+
+    # Tabela de Dias associada a Salas e Clientes
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS dias (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sala_id INTEGER NOT NULL,
+            cliente_id INTEGER NOT NULL,
+            dia TEXT NOT NULL,
+            FOREIGN KEY (sala_id) REFERENCES salas(id),
+            FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+        )
+    ''')
+
+    # Tabela de Horários associada a Salas, Clientes e Dias
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS horarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sala_id INTEGER NOT NULL,
+            cliente_id INTEGER NOT NULL,
+            dia_id INTEGER NOT NULL,
+            horario TEXT NOT NULL,
+            FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+            FOREIGN KEY (sala_id) REFERENCES salas(id),
+            FOREIGN KEY (dia_id) REFERENCES dias(id)
+        )
+    ''')
+
+    # Tabela de Uploads associada a todas as informações anteriores
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS uploads (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            cliente TEXT NOT NULL,
-            quadra TEXT NOT NULL,
-            cameraIP TEXT NOT NULL,
-            dia TEXT NOT NULL,
+            cliente_id INTEGER NOT NULL,
+            sala_id INTEGER NOT NULL,
+            dia_id INTEGER NOT NULL,
             horario TEXT NOT NULL,
-            video_url TEXT NOT NULL
+            video_url TEXT NOT NULL,
+            FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+            FOREIGN KEY (sala_id) REFERENCES salas(id),
+            FOREIGN KEY (dia_id) REFERENCES dias(id)
         )
     ''')
+
     conn.commit()
     conn.close()
 
-init_db()  # Inicializa o banco de dados
+init_db()
 
-# Configuração da AWS S3
-S3_BUCKET = "video-esporte"
-S3_REGION = "us-east-2"
-AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
-AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
-
-s3_client = boto3.client(
-    "s3",
-    region_name=S3_REGION,
-    aws_access_key_id=AWS_ACCESS_KEY,
-    aws_secret_access_key=AWS_SECRET_KEY,
-)
-
-# API para listar as clientes (agora baseado na tabela 'uploads')
+# Rota para listar clientes
 @app.route("/api/clientes")
 def get_clientes():
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT cliente FROM uploads")
+        cursor.execute("SELECT id, nome_cliente FROM clientes")
         clientes = cursor.fetchall()
         conn.close()
 
-        result = [{"nome": row[0]} for row in clientes]
+        result = [{"id": row[0], "nome": row[1]} for row in clientes]
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# API para listar as salas (agora baseado na tabela 'uploads')
-@app.route("/api/salas")
-def get_salas():
+# Rota para listar salas de um cliente específico
+@app.route("/api/salas/<int:cliente_id>")
+def get_salas(cliente_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT quadra FROM uploads")
+        cursor.execute("SELECT id, nome_sala FROM salas WHERE cliente_id = ?", (cliente_id,))
         salas = cursor.fetchall()
         conn.close()
 
-        result = [{"nome": row[0]} for row in salas]
+        result = [{"id": row[0], "nome": row[1]} for row in salas]
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# API para listar os dias de uma sala
-@app.route("/api/dias/<string:quadra>")
-def get_dias(quadra):
+# Rota para listar dias disponíveis para uma sala específica
+@app.route("/api/dias/<int:sala_id>")
+def get_dias(sala_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT dia FROM uploads WHERE quadra = ?", (quadra,))
+        cursor.execute("SELECT id, dia FROM dias WHERE sala_id = ?", (sala_id,))
         dias = cursor.fetchall()
         conn.close()
 
-        result = [{"dia": row[0]} for row in dias]
+        result = [{"id": row[0], "dia": row[1]} for row in dias]
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# API para listar os horários de uma sala e dia
-@app.route("/api/horarios/<string:quadra>/<string:dia>")
-def get_horarios(quadra, dia):
+# Rota para listar horários disponíveis para um dia específico
+@app.route("/api/horarios/<int:dia_id>")
+def get_horarios(dia_id):
     try:
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT horario FROM uploads WHERE quadra = ? AND dia = ?", (quadra, dia))
+        cursor.execute("SELECT horario FROM horarios WHERE dia_id = ?", (dia_id,))
         horarios = cursor.fetchall()
         conn.close()
 
@@ -100,7 +136,25 @@ def get_horarios(quadra, dia):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# API para upload de vídeo
+@app.route("/api/videos/<int:cliente_id>/<int:sala_id>/<int:dia_id>/<horario>")
+def get_videos(cliente_id, sala_id, dia_id, horario):
+    try:
+        conn = sqlite3.connect("uploads.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT video_url FROM uploads
+            WHERE cliente_id = ? AND sala_id = ? AND dia_id = ? AND horario = ?
+        """, (cliente_id, sala_id, dia_id, horario))
+        videos = cursor.fetchall()
+        conn.close()
+
+        result = [{"video_url": row[0]} for row in videos]
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    
+# Rota de Upload
 @app.route("/upload", methods=["POST"])
 def upload_file():
     # Validação dos parâmetros
@@ -121,6 +175,7 @@ def upload_file():
 
     try:
         # Envia o arquivo para o S3
+        s3_client = boto3.client("s3", region_name=S3_REGION)
         s3_client.upload_fileobj(file, S3_BUCKET, file.filename, ExtraArgs={"ACL": "public-read"})
         video_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file.filename}"
         
@@ -128,9 +183,20 @@ def upload_file():
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
 
-        # Inserir os dados do upload diretamente na tabela uploads
-        cursor.execute("INSERT INTO uploads (cliente, quadra, cameraIP, dia, horario, video_url) VALUES (?, ?, ?, ?, ?, ?)",
-                       (cliente, quadra, cameraIP, dia, horario, video_url))
+        # Verificar se a sala já existe, caso contrário, adicionar
+        cursor.execute("INSERT OR IGNORE INTO salas (cliente_id, nome_sala) VALUES (?, ?)", (cliente, quadra))
+        cursor.execute("SELECT id FROM salas WHERE nome_sala = ? AND cliente_id = ?", (quadra, cliente))
+        sala_id = cursor.fetchone()[0]
+
+        # Verificar se o dia já existe, caso contrário, adicionar
+        cursor.execute("INSERT OR IGNORE INTO dias (sala_id, cliente_id, dia) VALUES (?, ?, ?)", (sala_id, cliente, dia))
+
+        # Verificar se o horário já existe, caso contrário, adicionar
+        cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente, dia_id, horario))
+
+        # Inserir os dados do upload
+        cursor.execute("INSERT INTO uploads (cliente_id, sala_id, dia_id, horario, video_url) VALUES (?, ?, ?, ?, ?)",
+                       (cliente, sala_id, dia_id, horario, video_url))
         conn.commit()
         conn.close()
 
@@ -145,15 +211,6 @@ def upload_file():
             "horario": horario
         }), 200
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route("/list_videos")
-def list_videos():
-    try:
-        response = s3_client.list_objects_v2(Bucket=S3_BUCKET)
-        files = [obj["Key"] for obj in response.get("Contents", [])]
-        return jsonify({"videos": files}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
