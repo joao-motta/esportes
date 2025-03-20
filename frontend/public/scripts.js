@@ -91,45 +91,62 @@ document.addEventListener("DOMContentLoaded", function () {
         const buscarVideosButton = document.getElementById("buscarVideos");
 
         async function carregarDias(clienteId, salaId) {
-            const response = await fetch(`${apiBaseUrl}/dias/${clienteId}/${salaId}`);
-            const dias = await response.json();
-            dias.forEach(dia => {
-                const diaButton = document.createElement("button");
-                diaButton.textContent = dia.dia;
-                diaButton.dataset.id = dia.id;
-                diaButton.classList.add("dia-button");
-                diaButton.addEventListener("click", function () {
-                    carregarHorarios(dia.id);
+            try {
+                console.log("Carregando dias...");
+                const response = await fetch(`${apiBaseUrl}/dias/${clienteId}/${salaId}`);
+                const dias = await response.json();
+                console.log("Resposta recebida para dias:", dias);
+                if (!dias || dias.length === 0) {
+                    console.log("Nenhum dia encontrado");
+                    return;
+                }
+                dias.forEach(dia => {
+                    const diaButton = document.createElement("button");
+                    diaButton.textContent = dia.dia; // Verifique se o campo "dia" está correto
+                    diaButton.dataset.id = dia.id;
+                    diaButton.classList.add("dia-button");
+                    diaButton.addEventListener("click", function () {
+                        carregarHorarios(dia.id);
+                    });
+                    diasContainer.appendChild(diaButton);
                 });
-                diasContainer.appendChild(diaButton);
-            });
+            } catch (error) {
+                console.error("Erro ao carregar os dias:", error);
+            }
         }
 
         async function carregarHorarios(clienteId, salaId, diaId) {
-            const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
-            const horarios = await response.json();
-            horariosContainer.innerHTML = ''; // Limpa a lista de horários
-            horarios.forEach(horario => {
-                const horarioButton = document.createElement("button");
-                horarioButton.textContent = horario.horario;
-                horarioButton.dataset.id = horario.id;
-                horarioButton.classList.add("horario-button");
-        
-                // Adiciona a lógica de seleção do horário
-                horarioButton.addEventListener("click", function () {
-                    // Adiciona/remover a classe 'selected' para marcar o botão clicado
-                    const selectedButton = document.querySelector(".horario-button.selected");
-                    if (selectedButton) {
-                        selectedButton.classList.remove("selected");
-                    }
-                    horarioButton.classList.add("selected");
-        
-                    // Chama a função de busca de vídeos com os ids dos dia e horário
-                    buscarVideos(diaId, horario.id);
+            try {
+                console.log(`Carregando horários para o dia ${diaId}...`);
+                const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
+                const horarios = await response.json();
+                console.log("Resposta recebida para horários:", horarios);
+                if (!horarios || horarios.length === 0) {
+                    console.log("Nenhum horário encontrado");
+                    return;
+                }
+                horariosContainer.innerHTML = ''; // Limpa a lista de horários
+                horarios.forEach(horario => {
+                    const horarioButton = document.createElement("button");
+                    horarioButton.textContent = horario.horario; // Verifique se o campo "horario" está correto
+                    horarioButton.dataset.id = horario.id;
+                    horarioButton.classList.add("horario-button");
+    
+                    horarioButton.addEventListener("click", function () {
+                        const selectedButton = document.querySelector(".horario-button.selected");
+                        if (selectedButton) {
+                            selectedButton.classList.remove("selected");
+                        }
+                        horarioButton.classList.add("selected");
+    
+                        buscarVideos(diaId, horario.id);
+                    });
+    
+                    horariosContainer.appendChild(horarioButton);
                 });
-        
-                horariosContainer.appendChild(horarioButton);
-            });
+            } catch (error) {
+                console.error("Erro ao carregar os horários:", error);
+            }
         }
 
         async function buscarVideos(clienteId, salaId, diaId, horarioId) {
@@ -164,6 +181,6 @@ document.addEventListener("DOMContentLoaded", function () {
             buscarVideos(selectedDay.textContent, selectedTime.textContent);
         });
 
-        carregarDias();
+        carregarDias(clienteId, salaId); // Chama a função assim que a página carregar
     }
 });
