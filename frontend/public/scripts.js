@@ -15,26 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Função para exibir o nome do cliente e sala diretamente
-    function exibirClienteESala() {
-        // Para a página de seleção de sala (sala.html)
-        if (document.getElementById("clienteNome")) {
-            const clienteNomeDiv = document.getElementById("clienteNome");
-            clienteNomeDiv.textContent = `Cliente ID: ${clienteId}`; // Exibindo o ID do cliente
-        }
-
-        // Para a página de seleção de vídeos (selecionar.html)
-        if (document.getElementById("clienteNome")) {
-            const clienteNomeDiv = document.getElementById("clienteNome");
-            clienteNomeDiv.textContent = `Cliente ID: ${clienteId}`; // Exibindo o ID do cliente
-        }
-
-        if (document.getElementById("salaNome")) {
-            const salaNomeDiv = document.getElementById("salaNome");
-            salaNomeDiv.textContent = `Sala ID: ${salaId}`; // Exibindo o ID da sala
-        }
-    }
-
     // Página 1 - Selecione Cliente
     if (document.getElementById("cliente")) {
         const clienteSelect = document.getElementById("cliente");
@@ -101,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Página 3 - Selecione Dia, Horário e Vídeos
-    //if (document.getElementById("diasContainer")) {
+    if (document.getElementById("diasContainer")) {
         const urlParams = new URLSearchParams(window.location.search);
         const clienteId = urlParams.get("cliente");
         const salaId = urlParams.get("sala");
@@ -110,53 +90,51 @@ document.addEventListener("DOMContentLoaded", function () {
         const videosContainer = document.getElementById("videosContainer");
         const buscarVideosButton = document.getElementById("buscarVideos");
 
-        async function carregarDias(clienteId, salaId) {
+        async function carregarDias() {
             const response = await fetch(`${apiBaseUrl}/dias/${clienteId}/${salaId}`);
             const dias = await response.json();
-            const diasContainer = document.getElementById("diasContainer");
-            diasContainer.innerHTML = ""; // Limpa o conteúdo anterior
             dias.forEach(dia => {
                 const diaButton = document.createElement("button");
                 diaButton.textContent = dia.dia;
                 diaButton.dataset.id = dia.id;
                 diaButton.classList.add("dia-button");
                 diaButton.addEventListener("click", function () {
-                    carregarHorarios(clienteId, salaId, dia.id);
+                    carregarHorarios(dia.id);
                 });
                 diasContainer.appendChild(diaButton);
             });
         }
-    
-        async function carregarHorarios(clienteId, salaId, diaId) {
+
+        async function carregarHorarios(diaId) {
             const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
             const horarios = await response.json();
-            const horariosContainer = document.getElementById("horariosContainer");
-            horariosContainer.innerHTML = ''; // Limpa o conteúdo anterior
+            horariosContainer.innerHTML = ''; // Limpa a lista de horários
             horarios.forEach(horario => {
                 const horarioButton = document.createElement("button");
                 horarioButton.textContent = horario.horario;
                 horarioButton.dataset.id = horario.id;
                 horarioButton.classList.add("horario-button");
-    
+        
+                // Adiciona a lógica de seleção do horário
                 horarioButton.addEventListener("click", function () {
+                    // Adiciona/remover a classe 'selected' para marcar o botão clicado
                     const selectedButton = document.querySelector(".horario-button.selected");
                     if (selectedButton) {
                         selectedButton.classList.remove("selected");
                     }
                     horarioButton.classList.add("selected");
-    
-                    // Chama a função de buscar vídeos com os IDs do dia e horário
-                    buscarVideos(clienteId, salaId, diaId, horario.id);
+        
+                    // Chama a função de busca de vídeos com os ids dos dia e horário
+                    buscarVideos(diaId, horario.id);
                 });
-    
+        
                 horariosContainer.appendChild(horarioButton);
             });
         }
-    
-        async function buscarVideos(clienteId, salaId, diaId, horarioId) {
+
+        async function buscarVideos(diaId, horarioId) {
             const response = await fetch(`${apiBaseUrl}/videos/${clienteId}/${salaId}/${diaId}/${horarioId}`);
             const videos = await response.json();
-            const videosContainer = document.getElementById("videosContainer");
             videosContainer.innerHTML = "";
             if (videos.length === 0) {
                 videosContainer.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
@@ -175,15 +153,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 videosContainer.appendChild(videoElement);
             });
         }
-    
-        // Para a página "selecionar.html" (onde exibe dias e horários)
-        if (document.getElementById("diasContainer")) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const clienteId = urlParams.get("cliente");
-            const salaId = urlParams.get("sala");
-    
-            // Chama as funções para carregar Dias e Horários
-            carregarDias(clienteId, salaId);
+
+        buscarVideosButton.addEventListener("click", function () {
+            const selectedDay = document.querySelector(".dia-button.selected");
+            const selectedTime = document.querySelector(".horario-button.selected");
+            if (!selectedDay || !selectedTime) {
+                alert("Por favor, selecione um dia e horário.");
+                return;
+            }
+            buscarVideos(selectedDay.textContent, selectedTime.textContent);
+        });
+
+        carregarDias();
     }
-//}
-);
+});
