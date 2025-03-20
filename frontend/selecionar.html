@@ -10,23 +10,13 @@
     <h1>Selecione o Cliente, Sala, Dia e Horário</h1>
 
     <div class="container">
-        <label for="clientes">Cliente:</label>
-        <select id="clientes" disabled>
-            <option value="">Selecione um cliente</option>
-        </select>
+        <!-- Exibindo o nome do Cliente -->
+        <div><strong>Cliente:</strong> <span id="clienteNome">Carregando...</span></div>
     </div>
     
     <div class="container">
-        <label for="salas">Sala:</label>
-        <select id="salas" disabled>
-            <option value="">Selecione uma sala</option>
-        </select>
-    </div>
-
-    <!-- Exibindo os nomes do cliente e da sala -->
-    <div class="container">
-        <div><strong>Cliente:</strong> <span id="clienteNome"></span></div> 
-        <div><strong>Sala:</strong> <span id="salaNome"></span></div> 
+        <!-- Exibindo o nome da Sala -->
+        <div><strong>Sala:</strong> <span id="salaNome">Carregando...</span></div>
     </div>
 
     <div class="container">

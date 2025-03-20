@@ -15,6 +15,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Função para exibir o nome do cliente e sala diretamente
+    function exibirClienteESala() {
+        // Para a página de seleção de sala (sala.html)
+        if (document.getElementById("clienteNome")) {
+            const clienteNomeDiv = document.getElementById("clienteNome");
+            clienteNomeDiv.textContent = `Cliente ID: ${clienteId}`; // Exibindo o ID do cliente
+        }
+
+        // Para a página de seleção de vídeos (selecionar.html)
+        if (document.getElementById("clienteNome")) {
+            const clienteNomeDiv = document.getElementById("clienteNome");
+            clienteNomeDiv.textContent = `Cliente ID: ${clienteId}`; // Exibindo o ID do cliente
+        }
+
+        if (document.getElementById("salaNome")) {
+            const salaNomeDiv = document.getElementById("salaNome");
+            salaNomeDiv.textContent = `Sala ID: ${salaId}`; // Exibindo o ID da sala
+        }
+    }
+
     // Página 1 - Selecione Cliente
     if (document.getElementById("cliente")) {
         const clienteSelect = document.getElementById("cliente");
