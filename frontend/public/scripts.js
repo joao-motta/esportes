@@ -1,17 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clienteNome = urlParams.get("cliente");
+    const salaNome = urlParams.get("sala");
+
     // Página 1 - Selecione Cliente (index.html)
     if (document.getElementById("cliente")) {
         const clienteSelect = document.getElementById("cliente");
         const irParaSalaButton = document.getElementById("irParaSala");
 
         async function carregarClientes() {
-            // Aqui você irá buscar a lista de clientes da sua API
             const response = await fetch("http://3.141.32.43:5000/api/clientes");
             const clientes = await response.json();
             
             clientes.forEach(cliente => {
                 const option = document.createElement("option");
-                option.value = cliente.id;
+                option.value = cliente.nome;
                 option.textContent = cliente.nome;
                 clienteSelect.appendChild(option);
             });
@@ -22,9 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         irParaSalaButton.addEventListener("click", function () {
-            const clienteId = clienteSelect.value;
-            if (clienteId) {
-                window.location.href = `sala.html?cliente=${clienteId}`;
+            if (clienteSelect.value) {
+                window.location.href = `sala.html?cliente=${encodeURIComponent(clienteSelect.value)}`;
             }
         });
 
@@ -33,33 +35,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Página 2 - Selecione Sala (sala.html)
     if (document.getElementById("sala")) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const clienteId = urlParams.get("cliente");
+        if (!clienteNome) {
+            alert("Erro: Cliente não selecionado.");
+            window.location.href = "index.html";
+            return;
+        }
+
+        document.getElementById("clienteNome").textContent = `Cliente: ${clienteNome}`;
         const salaSelect = document.getElementById("sala");
         const irParaSelecaoButton = document.getElementById("irParaSelecao");
-        const clienteNome = document.getElementById("clienteNome");
 
         async function carregarSalas() {
-            // Aqui você irá buscar a lista de salas da sua API
-            const response = await fetch(`http://3.141.32.43:5000/api/salas?clienteId=${clienteId}`);
+            const response = await fetch(`http://3.141.32.43:5000/api/salas?cliente=${encodeURIComponent(clienteNome)}`);
             const salas = await response.json();
             
             salas.forEach(sala => {
                 const option = document.createElement("option");
-                option.value = sala.id;
+                option.value = sala.nome;
                 option.textContent = sala.nome;
                 salaSelect.appendChild(option);
             });
-        }
-
-        // Carregar o nome do cliente
-        if (clienteId && clienteNome) {
-            fetch(`http://3.141.32.43:5000/api/clientes/${clienteId}`)
-                .then(response => response.json())
-                .then(cliente => {
-                    clienteNome.textContent = cliente ? `Cliente: ${cliente.nome}` : 'Cliente não encontrado';
-                })
-                .catch(error => console.error("Erro ao buscar nome do cliente:", error));
         }
 
         salaSelect.addEventListener("change", function () {
@@ -67,9 +62,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         irParaSelecaoButton.addEventListener("click", function () {
-            const salaId = salaSelect.value;
-            if (salaId) {
-                window.location.href = `selecionar.html?cliente=${clienteId}&sala=${salaId}`;
+            if (salaSelect.value) {
+                window.location.href = `selecionar.html?cliente=${encodeURIComponent(clienteNome)}&sala=${encodeURIComponent(salaSelect.value)}`;
             }
         });
 
@@ -78,30 +72,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Página 3 - Selecione Dia, Horário e Vídeos (selecionar.html)
     if (document.getElementById("diasContainer")) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const clienteId = urlParams.get("cliente");
-        const salaId = urlParams.get("sala");
-        const diasContainer = document.getElementById("diasContainer");
-        const horariosContainer = document.getElementById("horariosContainer");
-        const videosContainer = document.getElementById("videosContainer");
+        if (!clienteNome || !salaNome) {
+            alert("Erro: Cliente ou Sala não selecionados corretamente.");
+            window.location.href = "index.html";
+            return;
+        }
 
-        // Carregar Cliente e Sala
-        fetch(`http://3.141.32.43:5000/api/clientes/${clienteId}`)
-            .then(response => response.json())
-            .then(cliente => {
-                document.getElementById("clienteNome").textContent = `Cliente: ${cliente.nome}`;
-            });
+        document.getElementById("clienteNome").textContent = `Cliente: ${clienteNome}`;
+        document.getElementById("salaNome").textContent = `Sala: ${salaNome}`;
 
-        fetch(`http://3.141.32.43:5000/api/salas/${salaId}`)
-            .then(response => response.json())
-            .then(sala => {
-                document.getElementById("salaNome").textContent = `Sala: ${sala.nome}`;
-            });
-
-        // Carregar Dias
         async function carregarDias() {
-            const response = await fetch(`http://3.141.32.43:5000/api/dias/${salaId}`);
+            const response = await fetch(`http://3.141.32.43:5000/api/dias?sala=${encodeURIComponent(salaNome)}`);
             const dias = await response.json();
+            const diasContainer = document.getElementById("diasContainer");
 
             dias.forEach(dia => {
                 const diaButton = document.createElement("button");
@@ -114,12 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // Carregar Horários
         async function carregarHorarios(dia) {
-            const response = await fetch(`http://3.141.32.43:5000/api/horarios/${salaId}/${dia}`);
+            const response = await fetch(`http://3.141.32.43:5000/api/horarios?sala=${encodeURIComponent(salaNome)}&dia=${dia}`);
             const horarios = await response.json();
-
+            const horariosContainer = document.getElementById("horariosContainer");
             horariosContainer.innerHTML = '';
+
             horarios.forEach(horario => {
                 const horarioButton = document.createElement("button");
                 horarioButton.textContent = horario;
@@ -131,12 +114,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // Buscar Vídeos
         async function buscarVideos(dia, horario) {
-            const response = await fetch(`http://3.141.32.43:5000/listavideos?cameraIP=${salaId}&dia=${dia}&horario=${horario}`);
+            const response = await fetch(`http://3.141.32.43:5000/listavideos?sala=${encodeURIComponent(salaNome)}&dia=${dia}&horario=${horario}`);
             const videos = await response.json();
-
+            const videosContainer = document.getElementById("videosContainer");
             videosContainer.innerHTML = "";
+
             if (videos.length === 0) {
                 videosContainer.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
                 return;
