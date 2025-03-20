@@ -1,4 +1,3 @@
-<!-- selecionar.html -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -12,7 +11,7 @@
 
     <div class="container">
         <label for="clientes">Cliente:</label>
-        <select id="clientes">
+        <select id="clientes" disabled>
             <option value="">Selecione um cliente</option>
         </select>
     </div>
@@ -24,9 +23,10 @@
         </select>
     </div>
 
+    <!-- Exibindo os nomes do cliente e da sala -->
     <div class="container">
-        <div id="clienteNome"></div> <!-- Exibe o nome do cliente selecionado -->
-        <div id="salaNome"></div> <!-- Exibe o nome da sala selecionada -->
+        <div><strong>Cliente:</strong> <span id="clienteNome"></span></div> 
+        <div><strong>Sala:</strong> <span id="salaNome"></span></div> 
     </div>
 
     <div class="container">
