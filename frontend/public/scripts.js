@@ -174,16 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        buscarVideosButton.addEventListener("click", function () {
-            const selectedDay = document.querySelector(".dia-button.selected");
-            const selectedTime = document.querySelector(".horario-button.selected");
-            if (!selectedDay || !selectedTime) {
-                alert("Por favor, selecione um dia e horário.");
-                return;
-            }
-            buscarVideos(selectedDay.textContent, selectedTime.textContent);
-        });
-
+        // Chama a função para exibir os dados do cliente e sala
+        exibirClienteESala();
         carregarDias();
     }
 });
