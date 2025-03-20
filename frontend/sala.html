@@ -1,0 +1,31 @@
+<!-- sala.html -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Sala</title>
+    <link rel="stylesheet" href="public/styles.css">
+</head>
+<body>
+    <h1>Selecione a Sala</h1>
+
+    <div class="container">
+        <div id="clienteNome"></div> <!-- Exibe o nome do cliente selecionado -->
+    </div>
+
+    <div class="container">
+        <label for="sala">Sala:</label>
+        <select id="sala">
+            <option value="">Selecione uma sala</option>
+            <!-- Opções de salas serão carregadas aqui -->
+        </select>
+    </div>
+
+    <div class="container">
+        <button id="irParaSelecao" disabled>Ir para seleção de dia e horário</button>
+    </div>
+
+    <script src="public/scripts.js"></script>
+</body>
+</html>
