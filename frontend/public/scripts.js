@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const irParaSelecaoButton = document.getElementById("irParaSelecao");
 
         async function carregarSalas() {
-            const response = await fetch(`${apiBaseUrl}/salas?cliente_id=${clienteId}`);
+            const response = await fetch(`${apiBaseUrl}/salas?${clienteId}`);
             const salas = await response.json();
             salas.forEach(sala => {
                 const option = document.createElement("option");
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const buscarVideosButton = document.getElementById("buscarVideos");
 
         async function carregarDias() {
-            const response = await fetch(`${apiBaseUrl}/dias/${salaId}?cliente_id=${clienteId}`);
+            const response = await fetch(`${apiBaseUrl}/dias/${salaId}/${clienteId}`);
             const dias = await response.json();
             dias.forEach(dia => {
                 const diaButton = document.createElement("button");
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         async function carregarHorarios(dia) {
-            const response = await fetch(`${apiBaseUrl}/horarios/${salaId}/${dia}?cliente_id=${clienteId}`);
+            const response = await fetch(`${apiBaseUrl}/horarios/${salaId}/${dia}/${clienteId}`);
             const horarios = await response.json();
             horariosContainer.innerHTML = '';
             horarios.forEach(horario => {
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         async function buscarVideos(dia, horario) {
-            const response = await fetch(`${apiBaseUrl}/videos?cliente=${clienteId}&sala=${salaId}&dia=${dia}&horario=${horario}`);
+            const response = await fetch(`${apiBaseUrl}/videos/${clienteId}/${salaId}/${dia}/${horario}`);
             const videos = await response.json();
             videosContainer.innerHTML = "";
             if (videos.length === 0) {
