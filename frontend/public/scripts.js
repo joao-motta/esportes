@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const irParaSelecaoButton = document.getElementById("irParaSelecao");
 
         async function carregarSalas() {
-            const response = await fetch(`${apiBaseUrl}/salas?${clienteId}`);
+            const response = await fetch(`${apiBaseUrl}/salas/${clienteId}`);
             const salas = await response.json();
             salas.forEach(sala => {
                 const option = document.createElement("option");
