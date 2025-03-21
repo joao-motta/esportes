@@ -82,104 +82,120 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Página 3 - Selecione Dia, Horário e Vídeos
     if (document.getElementById("diasContainer")) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const clienteId = urlParams.get("cliente");
-        const salaId = urlParams.get("sala");
-        const diasContainer = document.getElementById("diasContainer");
-        const horariosContainer = document.getElementById("horariosContainer");
-        const videosContainer = document.getElementById("videosContainer");
-        const buscarVideosButton = document.getElementById("buscarVideos");
-
-        async function carregarDias(clienteId, salaId) {
-            try {
-                const response = await fetch(`${apiBaseUrl}/dias/${clienteId}/${salaId}`);
-                const dias = await response.json();
-                dias.forEach(dia => {
-                    const diaButton = document.createElement("button");
-                    diaButton.textContent = dia.dia;
-                    diaButton.classList.add("dia-button");
-                    diaButton.addEventListener("click", function () {
-                        carregarHorarios(clienteId, salaId, dia.id);
+            const urlParams = new URLSearchParams(window.location.search);
+            const clienteId = urlParams.get("cliente");
+            const salaId = urlParams.get("sala");
+            const diasContainer = document.getElementById("diasContainer");
+            const horariosContainer = document.getElementById("horariosContainer");
+            const videosContainer = document.getElementById("videosContainer");
+            const buscarVideosButton = document.getElementById("buscarVideos");
+    
+            async function carregarDias(clienteId, salaId) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/dias/${clienteId}/${salaId}`);
+                    const dias = await response.json();
+                    dias.forEach(dia => {
+                        const diaButton = document.createElement("button");
+                        diaButton.textContent = dia.dia;
+                        diaButton.classList.add("dia-button");
+                        diaButton.addEventListener("click", function () {
+                            carregarHorarios(clienteId, salaId, dia.id);
+                        });
+                        diasContainer.appendChild(diaButton);
                     });
-                    diasContainer.appendChild(diaButton);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar dias", error);
+                } catch (error) {
+                    console.error("Erro ao carregar dias", error);
+                }
             }
-        }
-
-        async function carregarHorarios(clienteId, salaId, diaId) {
-            try {
-                const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
-                const horarios = await response.json();
-                horariosContainer.innerHTML = '';
-                horarios.forEach(horario => {
-                    const horarioButton = document.createElement("button");
-                    horarioButton.textContent = horario.horario;
-                    horarioButton.classList.add("horario-button");
-                    horarioButton.addEventListener("click", function () {
-                        document.querySelectorAll(".horario-button").forEach(btn => btn.classList.remove("selected"));
-                        horarioButton.classList.add("selected");
-                        buscarVideos(clienteId, salaId, diaId, horario.id);
+    
+            async function carregarHorarios(clienteId, salaId, diaId) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/horarios/${clienteId}/${salaId}/${diaId}`);
+                    const horarios = await response.json();
+                    horariosContainer.innerHTML = '';
+                    horarios.forEach(horario => {
+                        const horarioButton = document.createElement("button");
+                        horarioButton.textContent = horario.horario;
+                        horarioButton.classList.add("horario-button");
+                        horarioButton.addEventListener("click", function () {
+                            document.querySelectorAll(".horario-button").forEach(btn => btn.classList.remove("selected"));
+                            horarioButton.classList.add("selected");
+                            buscarVideos(clienteId, salaId, diaId, horario.id);
+                        });
+                        horariosContainer.appendChild(horarioButton);
                     });
-                    horariosContainer.appendChild(horarioButton);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar horários", error);
+                } catch (error) {
+                    console.error("Erro ao carregar horários", error);
+                }
             }
-        }
-
-        async function buscarVideos(clienteId, salaId, diaId, horarioId) {
-            try {
-                const response = await fetch(`${apiBaseUrl}/videos/${clienteId}/${salaId}/${diaId}/${horarioId}`);
-                const videos = await response.json();
-                videosContainer.innerHTML = "";
-                if (videos.length === 0) {
-                    videosContainer.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
+    
+            async function buscarVideos(clienteId, salaId, diaId, horarioId) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/videos/${clienteId}/${salaId}/${diaId}/${horarioId}`);
+                    const videos = await response.json();
+                    videosContainer.innerHTML = "";
+                    if (videos.length === 0) {
+                        videosContainer.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
+                        return;
+                    }
+                    
+                    const gridContainer = document.createElement("div");
+                    gridContainer.classList.add("video-grid");
+                    
+                    videos.forEach(video => {
+                        const videoCard = document.createElement("div");
+                        videoCard.classList.add("video-card");
+                        
+                        videoCard.innerHTML = `
+                            <div class="video-frame">
+                                <video controls width="250" poster="${video.thumbnail_url}">
+                                    <source src="${video.video_url}" type="video/mp4">
+                                    Seu navegador não suporta vídeos.
+                                </video>
+                            </div>
+                            <div class="video-actions">
+                                <button onclick="abrirVideoModal('${video.video_url}')">Assistir</button>
+                                <a href="${video.video_url}" download>
+                                    <button>Baixar</button>
+                                </a>
+                            </div>
+                        `;
+                        gridContainer.appendChild(videoCard);
+                    });
+                    
+                    videosContainer.appendChild(gridContainer);
+                } catch (error) {
+                    console.error("Erro ao buscar vídeos", error);
+                }
+            }
+    
+            window.abrirVideoModal = function (videoUrl) {
+                const modal = document.createElement("div");
+                modal.classList.add("video-modal");
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <span class="close-button" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                        <video controls autoplay width="600">
+                            <source src="${videoUrl}" type="video/mp4">
+                            Seu navegador não suporta vídeos.
+                        </video>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            };
+    
+            buscarVideosButton.addEventListener("click", function () {
+                const selectedDay = document.querySelector(".dia-button.selected");
+                const selectedTime = document.querySelector(".horario-button.selected");
+                if (!selectedDay || !selectedTime) {
+                    alert("Por favor, selecione um dia e horário.");
                     return;
                 }
-                
-                const gridContainer = document.createElement("div");
-                gridContainer.classList.add("video-grid");
-                
-                videos.forEach(video => {
-                    const videoCard = document.createElement("div");
-                    videoCard.classList.add("video-card");
-                    
-                    videoCard.innerHTML = `
-                        <div class="video-frame">
-                            <video controls width="250" poster="${video.thumbnail_url}">
-                                <source src="${video.video_url}" type="video/mp4">
-                                Seu navegador não suporta vídeos.
-                            </video>
-                        </div>
-                        <div class="video-actions">
-                            <button onclick="window.open('${video.video_url}', '_blank')">Assistir</button>
-                            <a href="${video.video_url}" download>
-                                <button>Baixar</button>
-                            </a>
-                        </div>
-                    `;
-                    gridContainer.appendChild(videoCard);
-                });
-                
-                videosContainer.appendChild(gridContainer);
-            } catch (error) {
-                console.error("Erro ao buscar vídeos", error);
-            }
+                buscarVideos(clienteId, salaId, selectedDay.dataset.id, selectedTime.dataset.id);
+            });
+    
+            carregarDias(clienteId, salaId);
         }
-
-        buscarVideosButton.addEventListener("click", function () {
-            const selectedDay = document.querySelector(".dia-button.selected");
-            const selectedTime = document.querySelector(".horario-button.selected");
-            if (!selectedDay || !selectedTime) {
-                alert("Por favor, selecione um dia e horário.");
-                return;
-            }
-            buscarVideos(clienteId, salaId, selectedDay.dataset.id, selectedTime.dataset.id);
-        });
-
-        carregarDias(clienteId, salaId);
-    }
-});
+    });
+    
 
