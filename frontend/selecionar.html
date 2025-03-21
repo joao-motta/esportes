@@ -31,6 +31,17 @@
         </div>
     </div>
 
+    <!-- Modal para exibição de vídeos -->
+    <div id="videoModal" class="video-modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="fecharVideoModal()">&times;</span>
+            <video id="modalVideo" controls autoplay width="600">
+                <source id="modalVideoSource" type="video/mp4">
+                Seu navegador não suporta vídeos.
+            </video>
+        </div>
+    </div>
+
     <script src="public/scripts.js"></script>
 </body>
 </html>
