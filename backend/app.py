@@ -183,10 +183,11 @@ def upload_file():
 
     try:
         # Envia o arquivo para o S3
+        content_type = 'video/mp4'
         s3_client = boto3.client("s3", region_name=S3_REGION)
-        s3_client.upload_fileobj(file, S3_BUCKET, file.filename, ExtraArgs={"ACL": "public-read"})
+        s3_client.upload_fileobj(file, S3_BUCKET, file.filename, ExtraArgs={"ACL": "public-read", "ContentType": content_type})
         video_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file.filename}"
-
+        
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
 
