@@ -166,7 +166,6 @@ def get_videos(cliente_id, sala_id, dia_id, horario_id):
 # Rota de Upload
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    # Validação dos parâmetros
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
     if "cliente" not in request.form or "quadra" not in request.form or "cameraIP" not in request.form or "dia" not in request.form or "horario" not in request.form:
@@ -187,31 +186,45 @@ def upload_file():
         s3_client = boto3.client("s3", region_name=S3_REGION)
         s3_client.upload_fileobj(file, S3_BUCKET, file.filename, ExtraArgs={"ACL": "public-read"})
         video_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file.filename}"
-        
-        # Salvar no banco SQLite
+
         conn = sqlite3.connect("uploads.db")
         cursor = conn.cursor()
 
-        # Verificar se o cliente já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO clientes (nome_cliente) VALUES (?)", (cliente,))
+        # Verificar se o cliente já existe
         cursor.execute("SELECT id FROM clientes WHERE nome_cliente = ?", (cliente,))
-        cliente_id = cursor.fetchone()[0]
+        cliente_row = cursor.fetchone()
+        if cliente_row:
+            cliente_id = cliente_row[0]
+        else:
+            cursor.execute("INSERT INTO clientes (nome_cliente) VALUES (?)", (cliente,))
+            cliente_id = cursor.lastrowid
 
-        # Verificar se a sala já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO salas (cliente_id, nome_sala) VALUES (?, ?)", (cliente_id, quadra))
+        # Verificar se a quadra já existe para o cliente
         cursor.execute("SELECT id FROM salas WHERE nome_sala = ? AND cliente_id = ?", (quadra, cliente_id))
-        sala_id = cursor.fetchone()[0]
+        sala_row = cursor.fetchone()
+        if sala_row:
+            sala_id = sala_row[0]
+        else:
+            cursor.execute("INSERT INTO salas (cliente_id, nome_sala) VALUES (?, ?)", (cliente_id, quadra))
+            sala_id = cursor.lastrowid
 
-        # Verificar se o dia já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO dias (sala_id, cliente_id, dia) VALUES (?, ?, ?)", (sala_id, cliente_id, dia))
+        # Verificar se o dia já existe
         cursor.execute("SELECT id FROM dias WHERE sala_id = ? AND cliente_id = ? AND dia = ?", (sala_id, cliente_id, dia))
-        dia_id = cursor.fetchone()[0]
+        dia_row = cursor.fetchone()
+        if dia_row:
+            dia_id = dia_row[0]
+        else:
+            cursor.execute("INSERT INTO dias (sala_id, cliente_id, dia) VALUES (?, ?, ?)", (sala_id, cliente_id, dia))
+            dia_id = cursor.lastrowid
 
-        # Verificar se o horário já existe, caso contrário, adicionar
-        cursor.execute("INSERT OR IGNORE INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente_id, dia_id, horario))
+        # Verificar se o horário já existe
         cursor.execute("SELECT id FROM horarios WHERE sala_id = ? AND cliente_id = ? AND dia_id = ? AND horario = ?", (sala_id, cliente_id, dia_id, horario))
-        horario_id = cursor.fetchone()[0]
-
+        horario_row = cursor.fetchone()
+        if horario_row:
+            horario_id = horario_row[0]
+        else:
+            cursor.execute("INSERT INTO horarios (sala_id, cliente_id, dia_id, horario) VALUES (?, ?, ?, ?)", (sala_id, cliente_id, dia_id, horario))
+            horario_id = cursor.lastrowid
 
         # Inserir os dados do upload
         cursor.execute("INSERT INTO uploads (cliente_id, sala_id, dia_id, horario_id, cameraIP, video_url) VALUES (?, ?, ?, ?, ?, ?)",
@@ -219,7 +232,6 @@ def upload_file():
         conn.commit()
         conn.close()
 
-        # Resposta com sucesso
         return jsonify({
             "message": "File uploaded successfully!",
             "url": video_url,
@@ -232,6 +244,7 @@ def upload_file():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/listavideos", methods=["GET"])
 def get_uploads():
