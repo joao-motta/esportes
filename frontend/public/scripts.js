@@ -138,17 +138,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     videosContainer.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
                     return;
                 }
-                
+        
                 const gridContainer = document.createElement("div");
                 gridContainer.classList.add("video-grid");
-                
+        
                 videos.forEach(video => {
                     const videoCard = document.createElement("div");
                     videoCard.classList.add("video-card");
-                    
+        
                     videoCard.innerHTML = `
                         <div class="video-frame">
-                            <video id="video-${video.id}" width="250" poster="${video.thumbnail_url}" controls>
+                            <video id="video-${video.id}" width="250" controls crossorigin="anonymous" preload="metadata">
                                 <source src="${video.video_url}" type="video/mp4">
                                 Seu navegador não suporta vídeos.
                             </video>
@@ -162,34 +162,56 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
                     gridContainer.appendChild(videoCard);
                 });
-                
+        
                 videosContainer.appendChild(gridContainer);
             } catch (error) {
                 console.error("Erro ao buscar vídeos", error);
             }
         }
-
+        
         window.abrirVideoModal = function (videoUrl) {
-            const modal = document.createElement("div");
-            modal.classList.add("video-modal");
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <span class="close-button" onclick="fecharVideoModal()">&times;</span>
-                    <video id="modalVideo" controls autoplay width="600">
-                        <source src="${videoUrl}" type="video/mp4">
-                        Seu navegador não suporta vídeos.
-                    </video>
-                </div>
-            `;
-            document.body.appendChild(modal);
+            let modal = document.getElementById("videoModal");
+        
+            // Criando o modal se não existir
+            if (!modal) {
+                modal = document.createElement("div");
+                modal.id = "videoModal";
+                modal.classList.add("video-modal");
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <span class="close-button" onclick="fecharVideoModal()">&times;</span>
+                        <video id="modalVideo" controls autoplay width="600">
+                            <source id="modalVideoSource" src="" type="video/mp4">
+                            Seu navegador não suporta vídeos.
+                        </video>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+        
+            const videoElement = document.getElementById("modalVideo");
+            const videoSource = document.getElementById("modalVideoSource");
+        
+            videoSource.src = videoUrl;
+            videoElement.load();  // Recarrega o vídeo com a nova URL
+            videoElement.play();  // Inicia a reprodução
+        
+            modal.style.display = "flex"; // Exibe o modal
         };
-
+        
         window.fecharVideoModal = function () {
-            const modal = document.querySelector(".video-modal");
+            const modal = document.getElementById("videoModal");
+            const videoElement = document.getElementById("modalVideo");
+        
+            if (videoElement) {
+                videoElement.pause(); // Pausa o vídeo antes de fechar
+            }
+        
             if (modal) {
-                modal.remove();
+                modal.style.display = "none"; // Esconde o modal
             }
         };
+        
 
         buscarVideosButton.addEventListener("click", function () {
             const selectedDay = document.querySelector(".dia-button.selected");
