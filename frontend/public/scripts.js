@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.abrirVideoModal = function (videoUrl) {
             let modal = document.getElementById("videoModal");
         
-            // Criando o modal se não existir
+            // Criar o modal se não existir
             if (!modal) {
                 modal = document.createElement("div");
                 modal.id = "videoModal";
@@ -192,11 +192,19 @@ document.addEventListener("DOMContentLoaded", function () {
             const videoElement = document.getElementById("modalVideo");
             const videoSource = document.getElementById("modalVideoSource");
         
+            // Definir o src da fonte
             videoSource.src = videoUrl;
-            videoElement.load();  // Recarrega o vídeo com a nova URL
-            videoElement.play();  // Inicia a reprodução
-        
-            modal.style.display = "flex"; // Exibe o modal
+            
+            // Esperar o navegador carregar o vídeo
+            videoElement.oncanplay = () => {
+                videoElement.play();  // Inicia a reprodução assim que o vídeo pode ser reproduzido
+            };
+            
+            // Carregar e tocar o vídeo
+            videoElement.load();
+            
+            // Exibir o modal
+            modal.style.display = "flex";
         };
         
         window.fecharVideoModal = function () {
@@ -205,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
             if (videoElement) {
                 videoElement.pause(); // Pausa o vídeo antes de fechar
+                videoElement.currentTime = 0; // Reinicia o vídeo para o começo
             }
         
             if (modal) {
@@ -212,7 +221,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
         
-
         buscarVideosButton.addEventListener("click", function () {
             const selectedDay = document.querySelector(".dia-button.selected");
             const selectedTime = document.querySelector(".horario-button.selected");
