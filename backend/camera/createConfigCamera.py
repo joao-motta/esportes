@@ -11,24 +11,25 @@ def criar_configuracao_cameras(arquivo_json="config_cameras.json"):
         {
             "cliente": "Academia XYZ",
             "nome": "QuadraTenis1",
+            "quadra": "Quadra de Tênis",
             "ip": "10.0.0.25",
             "porta": "80",
             "usuario": "admin",
             "senha": "Loja2010@",
-            "logos": [],
+            "logos": ['FastPlay.png'],
             "data_adicao": datetime.now().strftime("%d-%m-%Y")
         },
-                {
+        {
             "cliente": "Academia XYZ",
             "nome": "QuadraFutebol1",
+            "quadra": "Quadra de Futebol",
             "ip": "10.0.0.25",
             "porta": "80",
             "usuario": "admin",
             "senha": "Loja2010@",
-            "logos": [],
+            "logos": ['Logo-clube-campestre.png'],
             "data_adicao": datetime.now().strftime("%d-%m-%Y")
         }
-
     ]
     
     # Gerar automaticamente o caminho da pasta_destino
@@ -42,15 +43,20 @@ def criar_configuracao_cameras(arquivo_json="config_cameras.json"):
         json.dump(config, f, indent=4)
     
     print(f"✅ Arquivo de configuração '{arquivo_json}' criado com sucesso!")
-    
+
     # Enviar para a API
     try:
         with open(arquivo_json, "rb") as f:
+            # Enviar os dados da primeira câmera da lista
+            primeira_camera = cameras[0]  
+
             response = requests.post(
-                "http://18.219.146.25:5000/upload",
+                'http://3.141.32.43:5000/upload',
                 files={"file": (arquivo_json, f, "application/json")},
                 data={
-                    "cameraIP": "config_file",
+                    "cliente": primeira_camera["cliente"],
+                    "quadra": primeira_camera["quadra"],
+                    "cameraIP": primeira_camera["ip"],
                     "dia": datetime.now().strftime("%Y-%m-%d"),
                     "horario": datetime.now().strftime("%H:%M")
                 }
