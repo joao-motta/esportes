@@ -7,6 +7,7 @@ import signal
 import logging
 import numpy as np
 import cv2
+import argparse
 from datetime import datetime, timezone, timedelta
 from requests.auth import HTTPDigestAuth
 
