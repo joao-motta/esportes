@@ -4,18 +4,19 @@ import requests
 import time
 import subprocess
 import signal
+import logging
+import numpy as np
+import cv2
 from datetime import datetime, timezone, timedelta
 from requests.auth import HTTPDigestAuth
-import cv2
-
 
 
 CONFIG_FILE = "config_cameras.json"
-API_UPLOAD_URL = "https://esportes-x2p0.onrender.com/upload"
+VIDEOS_DIR = "videos"
+VIDEOS_BAIXADOS_FILE = "videos_baixados.json"
+API_BASE_URL = "http://3.141.32.43:5000"
 VIDEOS_DIR = "videos"
 
-
-VIDEOS_BAIXADOS_FILE = "videos_baixados.json"
 
 def carregar_videos_baixados():
     """Carrega a lista de vídeos já baixados do JSON."""
@@ -41,7 +42,6 @@ def marcar_video_baixado(video_original, video_final):
     salvar_videos_baixados(videos_baixados)
 
 
-
 def carregar_configuracoes():
     """Carrega as configurações das câmeras do arquivo JSON."""
     if not os.path.exists(CONFIG_FILE):
@@ -62,7 +62,6 @@ def listar_videos_na_api():
     try:
         response = requests.get(API_LISTAR_URL)
         #print(f"🔍 Resposta bruta da API: {response.text}")  # Debug da resposta
-
         if response.status_code == 200:
             try:
                 videos_api = response.json()
@@ -88,13 +87,6 @@ def listar_videos_na_api():
         print(f"❌ Erro ao consultar API: {e}")
         return set()
 
-
-
-
-
-
-
-
 def esperar_liberacao_arquivo(caminho_arquivo, tentativas=5, intervalo=4):
     """Aguarda o arquivo ser liberado antes de movê-lo."""
     for _ in range(tentativas):
@@ -106,12 +98,7 @@ def esperar_liberacao_arquivo(caminho_arquivo, tentativas=5, intervalo=4):
             time.sleep(intervalo)
     return False
 
-
-
-import os
-import time
-import subprocess
-import cv2
+#SEGUNDA PARTE
 
 def baixar_video_rtsp_ffmpeg(url_rtsp, nome_arquivo, usuario, senha):
     """Baixa um vídeo via RTSP usando ffmpeg, garantindo que o arquivo cresça corretamente."""
@@ -133,12 +120,10 @@ def baixar_video_rtsp_ffmpeg(url_rtsp, nome_arquivo, usuario, senha):
         time.sleep(3)  # Checa a cada 3 segundos
         if os.path.exists(nome_arquivo):
             tamanho_atual = os.path.getsize(nome_arquivo)
-
             if tamanho_atual > 300_000:  # Só começa a verificar se o arquivo tem pelo menos 300 KB
                 if tamanho_atual == tamanho_anterior:
                     tempo_sem_mudanca += 3
                     print(f"⏳ Tamanho do arquivo {nome_arquivo} não mudou por {tempo_sem_mudanca}s ({tamanho_atual} bytes)")
-
                     if tempo_sem_mudanca >= 12:  # Se por 12 segundos o tamanho não mudar, finaliza o ffmpeg
                         print(f"⚠ Nenhuma mudança no arquivo {nome_arquivo} por 12s. Finalizando ffmpeg...")
                         processo.terminate()
@@ -147,10 +132,8 @@ def baixar_video_rtsp_ffmpeg(url_rtsp, nome_arquivo, usuario, senha):
                 else:
                     tempo_sem_mudanca = 0  # Reset se o tamanho mudar
                 tamanho_anterior = tamanho_atual
-
         if processo.poll() is not None:  # Processo finalizou
             break
-
     time.sleep(2)  # Garante que o processo finalizou completamente
 
     if os.path.exists(nome_arquivo):
@@ -220,7 +203,6 @@ def baixar_video_rtsp(url_rtsp, nome_arquivo, usuario, senha):
     if baixar_video_rtsp_opencv(url_rtsp, nome_arquivo, usuario, senha):
         print(f"✅ Sucesso: {nome_arquivo} baixado com OpenCV!")
         return True
-
     print(f"⚠ Falha com OpenCV. Tentando método alternativo com ffmpeg...")
     
     for tentativa in range(2):
@@ -313,20 +295,11 @@ def listar_videos_disponiveis(ip, porta, usuario, senha, data_inicio, data_fim):
         print(f"❌ Erro na requisição para a câmera {ip}: {e}")
         return []
 
-import cv2
-import numpy as np
-
-import requests
-import os
-import cv2
-import numpy as np
-
-API_BASE_URL = "http://3.141.32.43:5000"  # URL base da API
+# TERCEIRA PARTE
 
 def buscar_url_logo(nome_arquivo):
     """Busca a URL do arquivo diretamente da listagem da API."""
-    API_LISTAR_URL = "http://3.141.32.43:5000/listavideos"
-
+    API_LISTAR_URL = f"{API_BASE_URL}/listavideos"
     try:
         response = requests.get(API_LISTAR_URL)
         if response.status_code == 200:
@@ -364,9 +337,6 @@ def baixar_logo(nome_arquivo):
     else:
         print(f"❌ Falha ao baixar logo '{nome_arquivo}'. Código: {response.status_code}")
         return None
-
-
-
 
 def adicionar_logos(video_path, logos):
     """
@@ -462,7 +432,6 @@ def adicionar_logos(video_path, logos):
     return True
 
 
-
 def monitorar_cameras():
     """Loop contínuo para processar as câmeras e listar vídeos pendentes."""
     config = carregar_configuracoes()
@@ -504,26 +473,18 @@ def monitorar_cameras():
                     if esperar_liberacao_arquivo(video_path):
                         if os.path.exists(video_path):
                             tamanho_final = os.path.getsize(video_path)
-
                             if tamanho_final > 3_145_728:  # Verifica se o vídeo tem pelo menos 3MB
                                 print(f"🖼️ Adicionando logos ao vídeo {video_nome}...")
-
                                 if adicionar_logos(video_path, camera.get("logos", [])):  # Passa a lista de logos corretamente
                                     print(f"✅ Vídeo processado com logos: {video_path}")
-
                                     # 🔹 **Marca o vídeo original como baixado, já que ele não muda de nome**
                                     marcar_video_baixado(video_nome, video_nome)
-
-
                                     print(f"📤 Enviando {video_path} para a API...")
                                     enviar_para_api(video_path, camera["ip"], camera["cliente"], camera["quadra"])
                                 else:
                                     print(f"⚠ Erro ao processar logos para {video_nome}. Enviando vídeo original...")
-
                                     # 🔹 **Mesmo que a logo falhe, marcamos o vídeo original como baixado**
                                     marcar_video_baixado(video_nome, video_nome)
-
-
                                     enviar_para_api(video_path, camera["ip"], camera["cliente"], camera["quadra"])
                             else:
                                 print(f"⚠ Vídeo {video_nome} inválido ou corrompido ({tamanho_final} bytes). Não será enviado.")
@@ -532,10 +493,6 @@ def monitorar_cameras():
 
         print("⏳ Aguardando 20 segundos antes da próxima verificação...")
         time.sleep(20)
-
-
-
-
-
+        
 if __name__ == "__main__":
     monitorar_cameras()
