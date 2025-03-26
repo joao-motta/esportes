@@ -10,3 +10,6 @@ typing_extensions==4.3.0
 gunicorn==20.1.0  # Necessário para rodar Flask em produção
 werkzeug==2.2.2
 boto3
+requests
+numpy
+opencv-python
