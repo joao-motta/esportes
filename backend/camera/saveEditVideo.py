@@ -62,11 +62,11 @@ def listar_videos_na_api():
 
     try:
         response = requests.get(API_LISTAR_URL)
-        #print(f"🔍 Resposta bruta da API: {response.text}")  # Debug da resposta
+        print(f"🔍 Resposta bruta da API: {response.text}")  # Debug da resposta
         if response.status_code == 200:
             try:
                 videos_api = response.json()
-                #print(f"📄 JSON recebido: {videos_api}")  # Debug do JSON
+                print(f"📄 JSON recebido: {videos_api}")  # Debug do JSON
 
                 if isinstance(videos_api, list):  # API retorna uma lista de dicionários
                     return {
