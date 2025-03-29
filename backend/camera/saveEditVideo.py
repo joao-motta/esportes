@@ -446,7 +446,7 @@ def monitorar_cameras():
 
             videos_camera_na_api = {video for video in videos_na_api if video.startswith(camera["nome"])}
 
-            data_inicio = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
+            data_inicio = (datetime.now(timezone.utc) - timedelta(days=5).strftime("%Y-%m-%dT00:00:00Z"))
             data_fim = datetime.now(timezone.utc).strftime("%Y-%m-%dT23:59:59Z")
 
             videos_disponiveis = listar_videos_disponiveis(camera["ip"], camera["porta"], camera["usuario"], camera["senha"], data_inicio, data_fim)
