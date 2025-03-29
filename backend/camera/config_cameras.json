@@ -3,9 +3,9 @@
         {
             "cliente": "Academia XYZ",
             "nome": "QuadraTenis1",
-            "quadra": "Quadra de T\u00eanis",
+            "quadra": "Quadra de Tenis",
             "ip": "201.50.200.85",
-            "porta": 8080,
+            "porta": 8000,
             "usuario": "admin",
             "senha": "Loja2010@",
             "logos": [
@@ -19,7 +19,7 @@
             "nome": "QuadraFutebol1",
             "quadra": "Quadra de Futebol",
             "ip": "201.50.200.85",
-            "porta": 8080,
+            "porta": 8000,
             "usuario": "admin",
             "senha": "Loja2010@",
             "logos": [
