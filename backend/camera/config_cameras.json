@@ -3,13 +3,30 @@
         {
             "cliente": "Academia XYZ",
             "nome": "QuadraTenis1",
-            "ip": "10.0.0.25",
-            "porta": "80",
+            "quadra": "Quadra de T\u00eanis",
+            "ip": "201.50.200.85",
+            "porta": 8080,
             "usuario": "admin",
             "senha": "Loja2010@",
-            "logos": [],
-            "data_adicao": "17-03-2025",
-            "pasta_destino": "videos/Academia XYZ/QuadraTenis1/10.0.0.25"
+            "logos": [
+                "FastPlay.png"
+            ],
+            "data_adicao": "29-03-2025",
+            "pasta_destino": "videos/Academia XYZ/QuadraTenis1/201.50.200.85"
+        },
+        {
+            "cliente": "Academia XYZ",
+            "nome": "QuadraFutebol1",
+            "quadra": "Quadra de Futebol",
+            "ip": "201.50.200.85",
+            "porta": 8080,
+            "usuario": "admin",
+            "senha": "Loja2010@",
+            "logos": [
+                "Logo-clube-campestre.png"
+            ],
+            "data_adicao": "29-03-2025",
+            "pasta_destino": "videos/Academia XYZ/QuadraFutebol1/201.50.200.85"
         }
     ]
 }
